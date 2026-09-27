@@ -111,7 +111,7 @@ def get_fir(fir_id: str, session: Session = Depends(get_session)) -> dict:
             "major_head": tax.major_label(a.crime_major) if a.crime_major else None,
             "minor_head": tax.minor_label(a.crime_minor) if a.crime_minor else None,
             "confidence": a.crime_confidence, "decided_by": a.decided_by, "escalated_to_llm": a.escalated,
-            "alternatives": sorted(({"minor_head": tax.minor_label(k), "probability": v}
+            "alternatives": sorted(({"id": k, "minor_head": tax.minor_label(k), "probability": v}
                                     for k, v in (a.crime_probabilities or {}).items()),
                                    key=lambda x: -x["probability"])[:3],
             "methods": [{"flag": f, "label": tax.mo_flags.get(f, f), "probability": p}
