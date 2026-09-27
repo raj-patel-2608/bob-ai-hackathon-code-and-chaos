@@ -52,7 +52,7 @@ class ParsedFIR:
 def split_batch(content: str, filename: str = "") -> list[str]:
     """Split an uploaded file into raw FIR texts (.txt with --- separators, .jsonl, .json or .csv)."""
     name = filename.lower()
-    content = content.lstrip("﻿")
+    content = content.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n")  # canonical newlines
     if name.endswith(".jsonl"):
         return [_text_of(json.loads(line)) for line in content.splitlines() if line.strip()]
     if name.endswith(".json"):

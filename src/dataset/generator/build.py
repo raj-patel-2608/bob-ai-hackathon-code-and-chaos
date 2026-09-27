@@ -519,11 +519,12 @@ def write_outputs(cases: list[Case], live: list[Case]) -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     def write_txt(path: Path, items: list[Case]):
-        path.write_text("\n\n---\n\n".join(c.text for c in items) + "\n", encoding="utf-8")
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write("\n\n---\n\n".join(c.text for c in items) + "\n")
 
     write_txt(OUT_DIR / "firs_main.txt", cases)
     write_txt(OUT_DIR / "demo_live_batch.txt", live)
-    with open(OUT_DIR / "firs_main.jsonl", "w", encoding="utf-8") as f:
+    with open(OUT_DIR / "firs_main.jsonl", "w", encoding="utf-8", newline="\n") as f:
         for c in cases:
             f.write(json.dumps({"raw_text": c.text}, ensure_ascii=False) + "\n")
     with open(OUT_DIR / "firs_main.csv", "w", encoding="utf-8", newline="") as f:
