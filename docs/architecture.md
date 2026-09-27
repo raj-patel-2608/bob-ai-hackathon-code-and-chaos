@@ -1,21 +1,24 @@
 # Architecture
 
 ## System Architecture
-Four processes plus a database. Only the **model service** loads AI models; everything else stays light.
+Three running services plus a database. Only the **model service** loads AI models; everything else stays light.
+The **web app is the main interface**. The MCP server is an extra, optional door into the same API for IBM Bob.
 
 ```mermaid
 graph LR
-    U[Investigator / SHO] -->|browser| FE[Next.js frontend :3000]
-    U -->|plain-English questions| BOB[IBM Bob IDE / Bob Shell<br/>'FIR Analyst' mode]
-    BOB -->|MCP stdio| MCP[CrimeFIR MCP server<br/>12 tools]
-    FE -->|REST| API[core-api FastAPI :8000<br/>ingest · rules · job queue · linking<br/>NetworkX clusters · station briefs · evaluation]
-    MCP -->|REST| API
-    API <-->|SQLAlchemy| DB[(SQLite WAL<br/>var/crimefir.db)]
+    U[Investigator / SHO] -->|browser| FE[Next.js web app :3000<br/>main interface]
+    FE -->|REST /api| API[core-api FastAPI :8000<br/>ingest · rules · job queue · linking<br/>NetworkX groups · station briefs · evaluation]
+    API <-->|SQLAlchemy| DB[(SQLite WAL<br/>var/crimefir.db<br/>+ var/uploads originals)]
     API -->|HTTP /v1 decide · embed · generate<br/>circuit breaker, rules fallback| MS[model-service FastAPI :8100]
     MS --> LAYA[Laya typed-decisions<br/>local GPU, CPU fallback]
     MS --> EMB[IBM Granite Embedding 30M<br/>local GPU, CPU fallback]
-    MS -->|REST + IAM token| WX[IBM watsonx.ai<br/>granite-4-h-small]
+    MS -->|HTTPS + IAM token| WX[IBM watsonx.ai<br/>granite-4-h-small]
+    U -.->|optional · not run yet| BOB[IBM Bob<br/>'FIR Analyst' mode · .bob/]
+    BOB -.->|MCP over stdio| MCP[CrimeFIR MCP server<br/>12 tools · verified with an MCP client]
+    MCP -->|REST /api| API
 ```
+Solid lines are in use and verified. Dotted lines: the MCP server is implemented and verified end-to-end with an MCP
+client (`src/mcp_server/smoke_test.py`), but IBM Bob itself has not been run with it yet.
 
 ## Components
 | Component | Technology | Responsibility |
@@ -26,15 +29,15 @@ graph LR
 | Decision model | **Laya** `convaiinnovations/laya` typed-decisions (Apache 2.0) | Crime minor head (major derived), 24 MO flags, victim gender, with calibrated confidence |
 | Embedding model | **IBM Granite Embedding** `ibm-granite/granite-embedding-30m-english` | 384-d vectors of the FIR story, used for pattern links |
 | LLM | **IBM Granite** `ibm/granite-4-h-small` on **watsonx.ai** (eu-de) | Second opinion when Laya < 40% confident; factual summary; station brief prose |
-| MCP server (`src/mcp_server`) | MCP Python SDK 2.x | Exposes the core API to IBM Bob as tools |
-| IBM Bob config (`.bob/`) | `mcp.json`, `custom_modes.yaml`, `rules-fir-analyst/` | "FIR Analyst" mode: cite FIR ids, leads not guilt, privacy |
+| MCP server (`src/mcp_server`) | MCP Python SDK 2.x (stdio) | Exposes the core API as 12 tools. Verified: `smoke_test.py` starts it the way Bob would, lists the tools and calls them on the live API |
+| IBM Bob config (`.bob/`) | `mcp.json`, `custom_modes.yaml`, `rules-fir-analyst/` | "FIR Analyst" mode: cite FIR ids, leads not guilt, privacy. Not yet loaded in a live Bob session |
 | Database | SQLite in WAL mode | Input, processing state, output, usage, audit |
 | Dataset (`src/dataset`) | Python generator + validator | 400 synthetic FIRs in NCRB I.I.F.-I layout, answer key, real-case sources |
 
 ## End-to-end data flow
 ```mermaid
 flowchart LR
-    A[Upload file / paste / Bob ingest_firs] --> B[Split, dedupe by text hash,<br/>store raw FIR + file unchanged]
+    A[Upload file / paste<br/>or MCP ingest_firs] --> B[Split, dedupe by text hash,<br/>store raw FIR + file unchanged]
     B --> C[1 extract - rules<br/>header, phones, accounts, UPI,<br/>IMEI, vehicles, handles, roles,<br/>amounts, accused + aliases]
     C --> D[2 decide - Laya<br/>crime minor/major, MO flags,<br/>victim gender, confidence]
     D -->|confidence >= 0.40| F
@@ -44,7 +47,7 @@ flowchart LR
     G --> H[Dashboard, case files, clusters,<br/>graph, station facts]
     H --> I[Station brief - Granite<br/>every number verified,<br/>template fallback]
     H --> J[Officer review queue]
-    H --> K[IBM Bob via MCP]
+    H --> K[MCP tools for IBM Bob]
 ```
 
 1. **Ingest.** `POST /api/batches` validates the file (type, size ≤ 10 MB, ≤ 1000 FIRs), stores it unchanged under
@@ -88,7 +91,7 @@ flowchart LR
   worker removes the unfinished FIRs, keeps the analysed ones and recalculates the groups.
 
 ## Security and privacy
-- Local by default. FIR text leaves the machine only for the ~12% of low-confidence FIRs sent to watsonx.ai
+- Local by default. FIR text leaves the machine only for the ~13% of low-confidence FIRs sent to watsonx.ai
   (IBM Cloud, eu-de). Removing the credentials keeps everything local.
 - Secrets live in `src/.env` (git-ignored). `src/.env.example` documents every variable.
 - Complainant phone numbers are masked in API responses and never used as offender evidence.

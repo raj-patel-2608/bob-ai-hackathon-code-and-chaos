@@ -1,8 +1,8 @@
 # 🚀 CrimeFIR: FIR Intelligence & Crime Pattern Detector
 
 > Reads raw FIR text, auto-drafts the NCRB crime classification, links FIRs across police stations and districts
-> through hard evidence, flags repeat-offender clusters and writes station crime briefs. Investigators can query all
-> of it in plain English through **IBM Bob**.
+> through hard evidence, flags repeat-offender clusters and writes station crime briefs. Investigators use the web
+> app; the same intelligence is exposed as **MCP tools for IBM Bob**.
 
 ---
 
@@ -36,8 +36,9 @@ A three-tier pipeline:
 - **IBM Granite on watsonx.ai** gives a grounded second opinion only when Laya is below 40% confident.
 
 Shared evidence links FIRs, NetworkX finds repeat-offender clusters with a transparent risk score, and Granite
-writes station briefs whose numbers are verified against the data. **IBM Bob** is the investigator's interface
-through our MCP server. [More in docs/solution-overview.md](docs/solution-overview.md)
+writes station briefs whose numbers are verified against the data. Everything is used through the **web app**, and
+our **MCP server** exposes it as 12 tools so **IBM Bob** can query it in plain English (the server is verified with an
+MCP client; a live Bob session is still to be done). [More in docs/solution-overview.md](docs/solution-overview.md)
 
 ---
 
@@ -51,8 +52,10 @@ through our MCP server. [More in docs/solution-overview.md](docs/solution-overvi
   watsonx.ai) for low-confidence FIRs, with schema-validated, text-grounded LLM output.
 - **Station-level crime trend brief** written by IBM Granite, where every number is checked against computed facts
   (template fallback).
-- **IBM Bob "FIR Analyst":** an MCP server with 12 tools, a custom mode with policing rules, and headless weekly
-  briefs with `bob run`.
+- **Web app for investigators:** add FIRs with live progress (stop / delete), sortable case files, repeat-offender
+  groups with network and timeline graphs, station briefs, AI accuracy and watsonx usage, day / night mode.
+- **Connection to IBM Bob:** an MCP server with 12 tools over the core API, verified end-to-end with an MCP client, and
+  a `.bob/` "FIR Analyst" mode with policing rules. Not yet run inside Bob (see Known Limitations).
 
 ---
 
@@ -62,7 +65,7 @@ through our MCP server. [More in docs/solution-overview.md](docs/solution-overvi
 |---|---|
 | **Languages** | Python 3.12, JavaScript (React) |
 | **Frameworks** | FastAPI, SQLAlchemy 2, Next.js 16 / React 19, Tailwind, react-force-graph (canvas graph), NetworkX, PyTorch, sentence-transformers, MCP Python SDK |
-| **IBM Technologies** | IBM Bob (IDE + Bob Shell, MCP, custom mode), IBM watsonx.ai, IBM Granite 4 (`granite-4-h-small`), IBM Granite Embedding (`granite-embedding-30m-english`) |
+| **IBM Technologies** | IBM watsonx.ai + IBM Granite 4 (`granite-4-h-small`), IBM Granite Embedding (`granite-embedding-30m-english`), IBM Bob connection (MCP server + `.bob/` custom mode) |
 | **Databases** | SQLite (WAL; PostgreSQL-ready through SQLAlchemy) |
 | **Other** | Laya decision model (Convai Innovations, Apache 2.0), rapidfuzz, numpy, pytest |
 
@@ -74,13 +77,13 @@ through our MCP server. [More in docs/solution-overview.md](docs/solution-overvi
 ├── src/
 │   ├── core_api/        # FastAPI: ingestion, rules, job queue + worker, links, NetworkX clusters, briefs, evaluation
 │   ├── model_service/   # FastAPI: Laya + Granite Embedding (GPU/CPU), watsonx Granite adapter (models.yaml)
-│   ├── mcp_server/      # MCP server exposing CrimeFIR to IBM Bob
+│   ├── mcp_server/      # MCP server: 12 CrimeFIR tools for IBM Bob (+ smoke_test.py)
 │   ├── frontend/        # Next.js UI
 │   ├── dataset/         # 400 mock FIRs (NCRB I.I.F.-I layout), answer key, generator, real-case sources
 │   ├── shared/          # crime taxonomy + dev-split calibration
 │   └── .env.example
-├── .bob/                # IBM Bob: MCP config, FIR Analyst mode, rules
-├── scripts/             # setup / start / load-data / weekly Bob brief
+├── .bob/                # IBM Bob project config: mcp.json, FIR Analyst mode, rules
+├── scripts/             # interactive setup, start / stop, doctor checks, load data, Bob weekly-brief script
 ├── docs/                # problem statement, solution overview, architecture, setup guide
 ├── demo/                # screenshots, video link, live-demo note
 ├── presentation/        # slides
@@ -145,8 +148,10 @@ missing.
   `CRIMEFIR_ENV=production`.
 - Low-confidence FIRs are sent to IBM watsonx.ai (cloud). Without credentials the system stays local and those FIRs
   go to officer review. Indicative BNS sections in the data are not legal advice.
-- The IBM Bob integration (MCP tools, mode, `bob run` script) was tested through the MCP SDK and the live API. A
-  full session inside Bob needs a Bob install and Bobcoins.
+- **IBM Bob has not been run with CrimeFIR yet.** The MCP server is implemented and verified end-to-end with an MCP
+  client against the live API (`src/mcp_server/smoke_test.py`: all 12 tools listed, calls return real data), and the
+  `.bob/` mode and rules are in place, but a session inside Bob (and `scripts/weekly_brief.ps1`, which calls
+  `bob run`) needs a Bob install and Bobcoins. The web app does not depend on Bob.
 
 ---
 
@@ -154,7 +159,7 @@ missing.
 
 - **Evidence first, honestly measured.** 100% cluster precision with zero decoys, 100% evidence extraction across
   messy formats, and an answer-key evaluation page, instead of claims.
-- **A decision architecture that knows when it doesn't know.** Laya's calibrated confidence sends only ~12% of FIRs
-  to IBM Granite, which got all 40 of them right. The full 400-FIR run used about 85k tokens.
+- **A decision architecture that knows when it doesn't know.** Laya's calibrated confidence sends only ~13% of FIRs
+  to IBM Granite, which got all 40 of them right. The full 400-FIR run used about 90k tokens.
 - **Grounded AI.** LLM names must appear in the FIR, claimed fraud personas never count as identities, and
   station-brief numbers are verified, so the system never invents a link or a figure.

@@ -4,7 +4,7 @@
 |---|---|---|
 | `core_api/` | FastAPI core: ingestion, FIR parser, rule-based evidence extraction, DB-backed job queue + background worker, Laya / LLM decisions, evidence & pattern links, NetworkX repeat-offender clusters, station facts & briefs, evaluation, REST API (`/docs`) | `uvicorn app.main:app --port 8000` · `pytest` |
 | `model_service/` | FastAPI model service: the only process that loads models. Provider adapters chosen in `models.yaml`: Laya (decision), IBM Granite Embedding (embedding), IBM Granite on watsonx.ai (generator). GPU-first with CPU fallback. | `uvicorn app.main:app --port 8100` · `pytest tests` |
-| `mcp_server/` | MCP server exposing the core API to IBM Bob (12 tools) | started by Bob via `.bob/mcp.json` · `pytest` |
+| `mcp_server/` | MCP server exposing the core API as 12 tools for IBM Bob | started by Bob via `.bob/mcp.json` · `pytest` · `python smoke_test.py` (live, verified) |
 | `frontend/` | Next.js 16 UI | `npm run dev` |
 | `dataset/` | 400 mock FIRs (NCRB I.I.F.-I layout), answer key, live-demo batch, generator + validator, real-case sources | `python generator/build.py` · `python generator/validate.py` |
 | `shared/` | `taxonomy.json` (crime heads, MO flags) and `calibration.json` (thresholds tuned on the dev split) | `core_api/scripts/calibrate.py` |

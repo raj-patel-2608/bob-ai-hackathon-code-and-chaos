@@ -1,26 +1,15 @@
 # Screenshots
 
-Place your application screenshots in this folder.
+The running app with the 400-FIR sample dataset (+ the 6-FIR live batch), day mode unless noted. 1600 px wide.
 
-## Naming Convention
-
-Name your screenshots sequentially so they appear in logical order:
-
-  01-landing-page.png       ← First thing a user sees
-  02-main-feature.png       ← Your primary feature in action
-  03-output-or-results.png  ← The result / value delivered
-  04-additional-feature.png ← Any other notable screen
-
-## Requirements
-
-- Minimum: 3 screenshots
-- Format: PNG or JPG
-- Show the application running with real (or realistic mock) data
-- Avoid screenshots of empty states or placeholder data
-- Captions are not required but appreciated
-
-## Tips
-
-- Use a consistent browser window size across all screenshots
-- Highlight key UI elements with arrows/circles if helpful (use any image editor)
-- Include a screenshot showing IBM technology integration if applicable
+| File | What it shows |
+|---|---|
+| `01-dashboard.png` | FIRs analysed, repeat-offender groups, cases needing an officer check, reported loss; highest-risk groups first |
+| `02-add-firs-upload.png` | Add FIRs: file drop zone or paste, upload history with status, time taken and delete |
+| `03-case-files.png` | All FIRs with sortable columns, filters (station, category, grouped / standalone, review), who decided and group |
+| `04-fir-case-file-auto-drafted.png` | One FIR: auto-drafted crime classification (NCRB I.I.F.-II), methods, victim, accused, highlighted evidence, connected FIRs with reasons |
+| `05-repeat-offender-group-timeline.png` | A repeat-offender group across 6 stations in 3 districts: timeline graph (first case → later cases sharing the same evidence), risk reasons, suggested actions |
+| `06-link-graph-network.png` | All 12 groups in the network view, coloured by the type of shared evidence |
+| `07-station-brief-granite.png` | Station trend facts and a brief written by IBM Granite on watsonx.ai, accepted because every number matches the data |
+| `08-ai-accuracy.png` | Who decided each FIR (Laya vs IBM Granite), watsonx usage by purpose, accuracy measured on unseen test FIRs |
+| `09-night-mode-dashboard.png` | The same dashboard in night mode |

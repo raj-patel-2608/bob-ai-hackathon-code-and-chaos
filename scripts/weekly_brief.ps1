@@ -1,6 +1,8 @@
 # Generates a weekly station crime brief headlessly with IBM Bob Shell (bob run), using the CrimeFIR MCP tools.
 # Usage:  ./scripts/weekly_brief.ps1 -Station "Navrangpura" [-MaxCost 2]
 # Requires: Bob Shell v2 logged in, CrimeFIR core API running, .bob/mcp.json in this repo.
+# Status: written against the Bob Shell docs, NOT yet run (no Bob install on the dev machine). The MCP tools it uses are
+# verified with src/mcp_server/smoke_test.py.
 param(
     [Parameter(Mandatory = $true)][string]$Station,
     [double]$MaxCost = 2

@@ -39,8 +39,8 @@ detection for years because **inter-district FIR connections were never surfaced
 | Categorise each by crime type | Auto-drafted NCRB **Major / Minor Head** (4 major, 17 minor) by Laya, with an IBM Granite second opinion |
 | Extract named entities: accused, location, MO, victim profile | Hard evidence (phones, accounts, UPI, IMEI, vehicles, handles), accused + aliases, 24 MO flags, victim age group / gender / occupation, loss, place |
 | Detect repeat-offender signatures across FIRs | Evidence links + **NetworkX clusters** across stations and districts |
-| Station-level crime trend summary + flagged repeat-offender list | Station facts vs previous period + **Granite-written brief with every number verified**, plus a risk-ranked **flagged cluster list** |
-| Bob-powered | **IBM Bob** queries everything through our MCP server ("FIR Analyst" mode) and writes weekly briefs headlessly (`bob run`) |
+| Station-level crime trend summary + flagged repeat-offender list | Station facts vs previous period + **Granite-written brief with every number verified**, plus a risk-ranked **list of flagged repeat-offender groups** |
+| Bob-powered | An MCP server exposes CrimeFIR as 12 tools for **IBM Bob**, with a `.bob/` "FIR Analyst" mode and rules. The server is verified with an MCP client; running it inside Bob is still to be shown. |
 
 ## Why now
 Cyber-enabled fraud is the fastest-growing crime category, it is inherently inter-district, and India is moving

@@ -33,6 +33,8 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
   const fgRef = useRef(null);                             // graph instance (the library returns a new handle per render)
   const [ready, setReady] = useState(false);
   const fitPending = useRef(true);
+  const fitUntil = useRef(0);                            // re-fit on engine ticks until this time (ms)
+  const lastFit = useRef(0);
   const onInstance = useCallback((instance) => { if (instance) { fgRef.current = instance; setReady(true); } }, []);
   const [width, setWidth] = useState(900);
   const [mode, setMode] = useState(initialMode);          // network | timeline
@@ -79,7 +81,11 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
     const CELL = 340;
     const cell = Object.fromEntries(groups.map((g, i) => [g, {
       x: ((i % cols) - (cols - 1) / 2) * CELL, y: (Math.floor(i / cols) - (Math.ceil(groups.length / cols) - 1) / 2) * CELL }]));
-    nodes.forEach((n) => { n.cellX = cell[n.group].x; n.cellY = cell[n.group].y; });
+    nodes.forEach((n, i) => {
+      n.cellX = cell[n.group].x; n.cellY = cell[n.group].y;
+      // start each node inside its group's cell, so the layout settles within the cooldown and the first fit is right
+      if (mode === "network") { n.x = n.cellX + ((i * 37) % 80) - 40; n.y = n.cellY + ((i * 53) % 80) - 40; }
+    });
 
     let axis = null;
     if (mode === "timeline" && firs.length) {
@@ -147,9 +153,10 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
     fg.d3Force("y", mode === "network" ? forceY((n) => n.cellY).strength(0.2) : null);
     fitPending.current = true;                    // fit once the layout has settled (see onEngineStop)
     fg.d3ReheatSimulation?.();
-    // fit again while the layout settles (the engine-stop fit alone can fire before the groups spread out)
-    const timers = [1500, 3500, 6000].map((ms) => setTimeout(() => fgRef.current?.zoomToFit(600, 80), ms));
-    return () => timers.forEach(clearTimeout);
+    // keep the view fitted while the layout settles (see onEngineTick); the timer is a fallback for a stopped engine
+    fitUntil.current = performance.now() + 6000;
+    const t = setTimeout(() => fgRef.current?.zoomToFit(400, 80), 1500);
+    return () => clearTimeout(t);
   }, [ready, mode, data]);
 
   // ------------------------------------------------------------------ drawing
@@ -297,6 +304,10 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
           onNodeClick={(n) => { setSelected(n); fgRef.current?.centerAt(n.x, n.y, 600); }}
           onBackgroundClick={() => setSelected(null)}
           cooldownTicks={mode === "timeline" ? 60 : 250}
+          onEngineTick={() => {
+            const now = performance.now();
+            if (now < fitUntil.current && now - lastFit.current > 350) { lastFit.current = now; fgRef.current?.zoomToFit(300, 80); }
+          }}
           onEngineStop={() => { if (fitPending.current) { fitPending.current = false; fgRef.current?.zoomToFit(600, 80); } }}
           d3VelocityDecay={0.35}
         />

@@ -12,7 +12,7 @@
 | GPU | optional | NVIDIA with ≥ 2 GB free VRAM is used automatically (tested on an RTX 3050 laptop with 4 GB). Without a GPU everything runs on CPU (slower). |
 | Internet | first start only | To download models from Hugging Face. watsonx.ai calls need internet. |
 | IBM Cloud / watsonx.ai | optional | For the Granite LLM tier. Without it, low-confidence FIRs go to the review queue and briefs use a template. |
-| IBM Bob | optional | For the Bob / MCP integration (see the last section) |
+| IBM Bob | optional | Only to use CrimeFIR from Bob through the MCP server (see the last section). The web app does not need it. |
 
 ## Environment Variables
 Copy `src/.env.example` to `src/.env` (the setup script does this). Never commit `src/.env`.
@@ -104,7 +104,7 @@ its FIRs, analysis, evidence and links are removed and the groups recalculated).
    (`ibm/granite-4-h-small`, or unavailable with the reason if no watsonx credentials).
 2. http://127.0.0.1:8000/api/health/ready returns `"status": "ready"` and `"mode": "full"`
    (or `rules-only` if the model service is down).
-3. http://localhost:3000 shows the dashboard. After loading data you should see 400 FIRs and 12 flagged clusters.
+3. http://localhost:3000 shows the dashboard. After loading `firs_main.txt` you should see 400 FIRs and 12 repeat-offender groups.
 4. **AI accuracy** page → *Evaluate test split*. You should see roughly: crime major 93%, minor 83%, evidence
    extraction 100%/100%, cluster precision 100%, 11/12 gangs (numbers for the LLM tier require watsonx
    credentials).
@@ -115,10 +115,17 @@ its FIRs, analysis, evidence and links are removed and the groups recalculated).
 cd src/core_api      && .venv/Scripts/python -m pytest          # 30 tests incl. a full 400-FIR regression run
 cd src/model_service && .venv/Scripts/python -m pytest tests    # 7 tests (GPU/CPU fallback, watsonx adapter)
 cd src/mcp_server    && .venv/Scripts/python -m pytest          # 3 tests
+cd src/mcp_server    && .venv/Scripts/python smoke_test.py      # live MCP check: needs the core API running
 python src/dataset/generator/validate.py                        # dataset / answer-key consistency
 ```
 
 ## IBM Bob integration
+**Status:** the MCP server is implemented and verified end-to-end with an MCP client (`smoke_test.py` starts it over
+stdio exactly as Bob does, lists the 12 tools and calls them against the live API). A live session inside IBM Bob has
+not been done yet. Steps to do it:
+
+0. Check the server first: with the core API running, `cd src/mcp_server && .venv/Scripts/python smoke_test.py`
+   must end with `RESULT: all MCP tool calls succeeded`.
 1. Install IBM Bob (bob.ibm.com/download) and sign in with your IBMid.
 2. Open this repository folder in Bob. Project-level config is already in `.bob/`:
    - `.bob/mcp.json` registers the `crimefir` MCP server (Windows interpreter path; on Linux/macOS change
@@ -126,7 +133,7 @@ python src/dataset/generator/validate.py                        # dataset / answ
    - `.bob/custom_modes.yaml` adds the **🕵️ FIR Analyst** mode, with rules in `.bob/rules-fir-analyst/`.
 3. With the core API running, choose the FIR Analyst mode and ask, for example: *"List the high-risk
    repeat-offender clusters and what to do first"* or *"Write a crime brief for Navrangpura for the last 30 days"*.
-4. Headless weekly brief (Bob Shell v2): `scripts\weekly_brief.ps1 -Station "Navrangpura"`
+4. Headless weekly brief (Bob Shell v2, not tested yet): `scripts\weekly_brief.ps1 -Station "Navrangpura"`
    (runs `bob run --format json --max-cost 2 …` and saves to `var/briefs/`).
 
 ## Troubleshooting

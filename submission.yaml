@@ -35,26 +35,26 @@ submission:
     CrimeFIR auto-drafts the NCRB crime classification (Major/Minor Head, method, victim, accused) from raw FIR text
     using rules for hard evidence, the local Laya decision model, and IBM Granite on watsonx.ai as a grounded second
     opinion when Laya is under 40% confident. It links FIRs through shared evidence, flags repeat-offender clusters
-    with NetworkX and a transparent risk score, and writes number-verified station crime briefs. Investigators query
-    everything in plain English through IBM Bob via our MCP server.
+    with NetworkX and a transparent risk score, and writes number-verified station crime briefs. Investigators use the
+    web app; an MCP server (verified with an MCP client) exposes the same intelligence as 12 tools for IBM Bob.
 
   key_features:                        # REQUIRED — List 3 to 5 specific features you implemented
     - "Auto-drafted NCRB I.I.F.-II per FIR: crime major/minor head (93% / 83% on unseen FIRs), 24 MO flags, victim, accused"
     - "Evidence-based repeat-offender clusters across stations and districts (NetworkX): 100% precision, 0 decoys"
     - "System-1/System-2 decisions: Laya locally on GPU/CPU + IBM Granite (watsonx.ai) for low-confidence FIRs, grounded JSON"
     - "Station-level crime trend brief written by IBM Granite with every number verified against the data"
-    - "IBM Bob 'FIR Analyst': MCP server with 12 tools, custom mode with policing rules, headless weekly briefs (bob run)"
+    - "MCP server with 12 CrimeFIR tools + .bob 'FIR Analyst' mode so IBM Bob can query FIRs, groups and station trends"
 
   tech_stack:
     languages: ["Python", "JavaScript"]                  # REQUIRED
     frameworks: ["FastAPI", "SQLAlchemy", "Next.js", "React", "NetworkX", "PyTorch", "sentence-transformers", "MCP Python SDK"]
-    ibm_technologies: ["IBM Bob", "IBM Bob Shell", "watsonx.ai", "IBM Granite 4 (granite-4-h-small)", "IBM Granite Embedding"]
+    ibm_technologies: ["watsonx.ai", "IBM Granite 4 (granite-4-h-small)", "IBM Granite Embedding", "IBM Bob (via MCP server + .bob custom mode)"]
     databases: ["SQLite"]
     other: ["Laya decision model (Convai Innovations, Apache 2.0)", "Tailwind CSS", "react-force-graph", "pytest"]
 
   what_we_are_most_proud_of: >
     Evidence first and honestly measured: 100% cluster precision with zero decoys and 100% evidence extraction
-    across messy formats, shown on an answer-key evaluation page. Laya's calibrated confidence sends only about 12%
+    across messy formats, shown on an answer-key evaluation page. Laya's calibrated confidence sends only about 13%
     of FIRs to IBM Granite (40/40 correct), and all LLM output is grounded: names must appear in the FIR, claimed
     fraud personas never count as identities, and brief numbers are verified.
 
@@ -63,7 +63,8 @@ submission:
     exists). Names without a surname cannot be proven to be the same person, so one planted gang is only partly
     recovered (11/12). MO flags are the weakest output (F1 0.64). Pattern-only links are weak and labelled as such.
     There is no authentication or role-based access. Low-confidence FIRs are sent to watsonx.ai (cloud) when
-    credentials are configured.
+    credentials are configured. The MCP server for IBM Bob is verified with an MCP client, but has not yet been run
+    inside a live IBM Bob session.
 
 # =============================================================================
 # ARTIFACT LOCATIONS
