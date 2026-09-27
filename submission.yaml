@@ -50,7 +50,7 @@ submission:
     frameworks: ["FastAPI", "SQLAlchemy", "Next.js", "React", "NetworkX", "PyTorch", "sentence-transformers", "MCP Python SDK"]
     ibm_technologies: ["IBM Bob", "IBM Bob Shell", "watsonx.ai", "IBM Granite 4 (granite-4-h-small)", "IBM Granite Embedding"]
     databases: ["SQLite"]
-    other: ["Laya decision model (Convai Innovations, Apache 2.0)", "Tailwind CSS", "d3-force", "pytest"]
+    other: ["Laya decision model (Convai Innovations, Apache 2.0)", "Tailwind CSS", "react-force-graph", "pytest"]
 
   what_we_are_most_proud_of: >
     Evidence first and honestly measured: 100% cluster precision with zero decoys and 100% evidence extraction

@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CrimeTag, DecidedBy, EntityChip, LinkBadge, StatusBadge } from "../../../components/Badges";
+import { DecidedBy, EntityChip, LinkBadge, StatusBadge } from "../../../components/Badges";
 import ErrorBox from "../../../components/ErrorBox";
 import PageHeader from "../../../components/PageHeader";
 import { api, fmtDate, fmtMoney, IDENTITY_LABELS, pct } from "../../../lib/api";
+import InfoTip from "../../../components/InfoTip";
+import { GLOSSARY } from "../../../lib/glossary";
 
 const HIGHLIGHT = {
   phone: "bg-emerald-500/25", bank_account: "bg-amber-500/25", upi_id: "bg-amber-500/25", imei: "bg-violet-500/25",
@@ -55,7 +57,7 @@ function ReviewBox({ fir, onDone }) {
   };
   return (
     <div className="case-panel stripe-amber p-5 space-y-3">
-      <div className="text-sm text-paper-100 font-medium">Officer review</div>
+      <div className="text-sm text-paper-100 font-medium">Officer check needed</div>
       <div className="text-xs text-paper-500">{(fir.iif2_draft?.review_reasons || []).join(" · ") || "Confirm or correct the automatic classification."}</div>
       <input value={minor} onChange={(e) => setMinor(e.target.value)} placeholder="crime minor id, e.g. cyber.digital_arrest"
         className="w-full bg-ink-950 border border-ink-600 px-3 py-2 text-xs data-id text-paper-100" list="minor-options" />
@@ -98,30 +100,38 @@ export default function FirDetailPage() {
             <StatusBadge status={fir.status} />
             {fir.cluster_id ? (
               <Link href={`/offenders/${fir.cluster_id}`} className="border border-signal-red text-signal-red text-xs px-3 py-1.5">
-                Part of flagged cluster {fir.cluster_id}
+                Part of repeat-offender group {fir.cluster_id}
               </Link>
             ) : null}
-            <Link href={`/graph?fir=${encodeURIComponent(fir.id)}`} className="border border-signal-blue text-signal-blue text-xs px-3 py-1.5">Graph around this FIR</Link>
+            <Link href={`/graph?fir=${encodeURIComponent(fir.id)}`} className="border border-signal-blue text-signal-blue text-xs px-3 py-1.5">Show links on graph</Link>
           </div>
         } />
       <div className="p-8 grid grid-cols-1 xl:grid-cols-5 gap-6">
         <div className="xl:col-span-3 space-y-6">
           <div className="case-panel stripe-blue p-5">
-            <div className="text-[11px] uppercase tracking-wide text-paper-500 mb-2">Auto-drafted crime details (NCRB I.I.F.-II)</div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <CrimeTag>{d.major_head || "—"}</CrimeTag>
-              <span className="text-paper-100 font-medium">{d.minor_head || "Unclassified"}</span>
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-paper-500 mb-3">
+              Crime classification (drafted by AI) <InfoTip text={GLOSSARY.classification} />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-2">
+              <div>
+                <div className="flex items-center gap-1.5 text-[11px] text-paper-500">Crime category <InfoTip text={GLOSSARY.crimeCategory} /></div>
+                <div className="text-paper-100">{d.major_head || "—"}</div>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5 text-[11px] text-paper-500">Crime type <InfoTip text={GLOSSARY.crimeType} /></div>
+                <div className="text-paper-100 font-medium">{d.minor_head || "Unclassified"}</div>
+              </div>
             </div>
             <div className="mt-2"><DecidedBy by={d.decided_by} confidence={d.confidence} />
               {d.escalated_to_llm && d.decided_by !== "llm" ? <span className="text-[11px] text-signal-amber ml-2">below 40% confidence: waiting for Granite LLM second opinion</span> : null}</div>
             {d.alternatives?.length ? (
               <div className="text-[11px] text-paper-500 mt-2">
-                Alternatives: {d.alternatives.map((a) => `${a.minor_head} ${pct(a.probability)}`).join(" · ")}
+                Other possibilities Laya considered: {d.alternatives.map((a) => `${a.minor_head} ${pct(a.probability)}`).join(" · ")}
               </div>
             ) : null}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 text-xs">
               <div>
-                <div className="text-paper-500 mb-1">Method (MO)</div>
+                <div className="flex items-center gap-1.5 text-paper-500 mb-1">How it was done (method) <InfoTip text={GLOSSARY.method} /></div>
                 {d.methods?.length ? d.methods.map((m) => (
                   <div key={m.flag} className="text-paper-300">· {m.label} <span className="text-paper-500">{d.decided_by === "llm" ? "(Granite)" : pct(m.probability)}</span></div>
                 )) : <div className="text-paper-500">none detected</div>}
@@ -147,8 +157,8 @@ export default function FirDetailPage() {
 
           <div className="case-panel p-5">
             <div className="flex justify-between items-baseline mb-3">
-              <div className="text-sm text-paper-100 font-medium">First Information contents</div>
-              <div className="text-[11px] text-paper-500">highlighted: evidence extracted by rules</div>
+              <div className="text-sm text-paper-100 font-medium">FIR text (what the complainant said)</div>
+              <div className="text-[11px] text-paper-500">highlighted = evidence found automatically</div>
             </div>
             <HighlightedNarrative narrative={fir.narrative} offset={fir.narrative_offset} entities={fir.entities} />
             <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs text-paper-500 mt-4 border-t border-ink-700 pt-3">
@@ -161,7 +171,7 @@ export default function FirDetailPage() {
           </div>
 
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-3">Evidence identifiers</div>
+            <div className="text-sm text-paper-100 font-medium mb-3">Evidence found in this FIR</div>
             <div className="flex flex-wrap gap-2">
               {evidence.length ? evidence.map((e, i) => <EntityChip key={i} type={e.type} value={e.value} role={e.role} />)
                 : <span className="text-sm text-paper-500">No hard identifiers in this FIR.</span>}
@@ -169,7 +179,7 @@ export default function FirDetailPage() {
           </div>
 
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-3">Processing</div>
+            <div className="text-sm text-paper-100 font-medium mb-3">How this FIR was processed</div>
             <div className="grid grid-cols-4 gap-2 text-[11px]">
               {fir.pipeline.map((p) => (
                 <div key={p.stage} className="border border-ink-700 p-2">
@@ -186,8 +196,8 @@ export default function FirDetailPage() {
         <div className="xl:col-span-2 space-y-6">
           {fir.needs_review ? <ReviewBox fir={fir} onDone={load} /> : null}
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-1">Related FIRs</div>
-            <div className="text-xs text-paper-500 mb-4">Evidence links share a hard identifier; pattern links only look similar.</div>
+            <div className="text-sm text-paper-100 font-medium mb-1">Connected FIRs</div>
+            <div className="text-xs text-paper-500 mb-4">"Evidence" = same phone, account, UPI ID, vehicle or accused. "Pattern only" = similar story, no shared evidence (weak).</div>
             {related.length === 0 ? <div className="text-sm text-paper-500">No linked FIRs.</div> : (
               <div className="space-y-3">
                 {related.map((r) => (

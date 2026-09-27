@@ -8,6 +8,7 @@ Synthetic FIRs in the NCRB I.I.F.-I layout, grounded in real reported crime patt
 | `firs_main.jsonl`, `firs_main.csv` | Same FIRs, one `raw_text` per record | Alternative upload formats |
 | `ground_truth.json` | Answer key: crime major/minor head, MO flags, victim profile, identifiers with roles, accused, planted cluster/decoy ids, dev/test split | **Evaluation only**. Never read by the pipeline. |
 | `demo_live_batch.txt` + `demo_live_ground_truth.json` | 6 new FIRs, 3 of which attach to existing gangs | Live demo |
+| `firs_unrelated.txt` + `unrelated_ground_truth.json` | 60 standalone FIRs: realistic cases with unique evidence and no gangs | Showing that unrelated cases stay unlinked (0 groups expected) |
 | `generator/` | `build.py` (deterministic, seed `20260927`), `validate.py` | Reproducing and checking the data |
 
 ## Design

@@ -5,7 +5,7 @@ import re
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from ..db.engine import get_session
@@ -53,9 +53,17 @@ def _get_fir(session: Session, fir_id: str) -> Fir:
 @router.get("/firs")
 def list_firs(station_id: int | None = None, crime_major: str | None = None, crime_minor: str | None = None,
               fir_status: str | None = Query(None, alias="status"), needs_review: bool | None = None,
-              q: str | None = None, limit: int = Query(50, le=500), offset: int = 0,
+              q: str | None = None, linked: bool | None = None,
+              sort: str = Query("registered_at", pattern="^(registered_at|id|confidence|amount|station)$"),
+              order: str = Query("desc", pattern="^(asc|desc)$"),
+              limit: int = Query(50, le=500), offset: int = 0,
               session: Session = Depends(get_session)) -> dict:
+    """FIR list. Default order: most recently registered first. `linked=true` -> only FIRs in a repeat-offender
+    group, `linked=false` -> standalone FIRs."""
     stmt = select(Fir, FirAnalysis).outerjoin(FirAnalysis, FirAnalysis.fir_id == Fir.id)
+    if linked is not None:
+        in_cluster = Fir.id.in_(select(ClusterMember.fir_id))
+        stmt = stmt.where(in_cluster if linked else ~in_cluster)
     if station_id:
         stmt = stmt.where(Fir.station_id == station_id)
     if crime_major:
@@ -68,9 +76,17 @@ def list_firs(station_id: int | None = None, crime_major: str | None = None, cri
         stmt = stmt.where(FirAnalysis.needs_review == needs_review)
     if q:
         stmt = stmt.where(or_(*_search_conditions(q)))
-    total = len(session.execute(stmt).all())
-    rows = session.execute(stmt.order_by(Fir.registered_at.desc()).limit(limit).offset(offset)).all()
-    return {"total": total, "items": [fir_row(f, a) for f, a in rows]}
+    total = session.scalar(select(func.count()).select_from(stmt.subquery()))
+    column = {"registered_at": Fir.registered_at, "id": Fir.id, "confidence": FirAnalysis.crime_confidence,
+              "amount": FirAnalysis.amount, "station": Station.name}[sort]
+    if sort == "station":
+        stmt = stmt.outerjoin(Station, Station.id == Fir.station_id)
+    ordered = column.asc().nulls_last() if order == "asc" else column.desc().nulls_last()
+    rows = session.execute(stmt.order_by(ordered, Fir.id).limit(limit).offset(offset)).all()
+    clusters = dict(session.execute(select(ClusterMember.fir_id, ClusterMember.cluster_id)
+                                    .where(ClusterMember.fir_id.in_([f.id for f, _ in rows]))).all())
+    return {"total": total, "offset": offset, "limit": limit, "sort": sort, "order": order,
+            "items": [{**fir_row(f, a), "cluster_id": clusters.get(f.id)} for f, a in rows]}
 
 
 def _search_conditions(q: str):

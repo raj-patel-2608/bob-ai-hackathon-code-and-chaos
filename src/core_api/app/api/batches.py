@@ -1,13 +1,18 @@
 """Batch upload and processing status."""
 from __future__ import annotations
 
+import shutil
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.orm import Session
 
 from ..db.engine import get_session
-from ..db.models import Fir, FirStageRun, IngestBatch
+from ..db.models import (AuditLog, ClusterMember, Embedding, Entity, Fir, FirAnalysis, FirStageRun, IngestBatch, Link,
+                         Station, StationReport)
+from ..services import intelligence
 from ..pipeline.queue import retry_failed
 from ..services.ingestion import IngestError, ingest_content
 
@@ -76,6 +81,35 @@ def retry_batch(batch_id: str, session: Session = Depends(get_session)) -> dict:
     if requeued:
         batch.status = "PROCESSING"
     return {"requeued_stage_runs": requeued}
+
+
+@router.delete("/{batch_id}")
+def delete_batch(batch_id: str, session: Session = Depends(get_session)) -> dict:
+    """Delete a batch and everything derived from its FIRs (analysis, evidence, embeddings, links), then
+    rebuild the repeat-offender groups from the remaining data. Refused while the batch is still processing."""
+    batch = session.get(IngestBatch, batch_id)
+    if batch is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "batch not found")
+    if batch.status in ("RECEIVED", "PROCESSING", "LINKING"):
+        raise HTTPException(status.HTTP_409_CONFLICT, "batch is still processing; delete it when it has finished")
+    fir_ids = list(session.scalars(select(Fir.id).where(Fir.batch_id == batch_id)))
+    if fir_ids:
+        session.execute(delete(ClusterMember).where(ClusterMember.fir_id.in_(fir_ids)))
+        session.execute(delete(Link).where(or_(Link.fir_a.in_(fir_ids), Link.fir_b.in_(fir_ids))))
+        for model in (Embedding, Entity, FirStageRun, FirAnalysis):
+            session.execute(delete(model).where(model.fir_id.in_(fir_ids)))
+        session.execute(delete(Fir).where(Fir.id.in_(fir_ids)))
+    session.delete(batch)
+    session.flush()
+    used = select(Fir.station_id).where(Fir.station_id.is_not(None))
+    session.execute(delete(StationReport).where(StationReport.station_id.not_in(used)))
+    session.execute(delete(Station).where(Station.id.not_in(used)))
+    if batch.stored_path:
+        shutil.rmtree(Path(batch.stored_path).parent, ignore_errors=True)
+    stats = intelligence.rebuild(session)
+    session.add(AuditLog(action="batch.deleted", target=batch_id,
+                         detail={"filename": batch.filename, "firs_deleted": len(fir_ids)}))
+    return {"deleted_batch": batch_id, "firs_deleted": len(fir_ids), "clusters_now": stats["clusters"]}
 
 
 def _batch_summary(session: Session, batch: IngestBatch) -> dict:

@@ -63,6 +63,11 @@ def system_status(session: Session = Depends(get_session)) -> dict:
         "fir_status": dict(session.execute(select(Fir.status, func.count()).group_by(Fir.status)).all()),
         "stages": stages,
         "llm_tokens_this_month": tokens_used_this_month(session),
+        "llm_usage": [{"purpose": p, "calls": c, "tokens": int(t or 0)} for p, c, t in session.execute(
+            select(LlmUsage.purpose, func.count(), func.sum(LlmUsage.input_tokens + LlmUsage.output_tokens))
+            .group_by(LlmUsage.purpose)).all()],
+        "decided_by": dict(session.execute(select(FirAnalysis.decided_by, func.count())
+                                           .group_by(FirAnalysis.decided_by)).all()),
         "llm_monthly_budget": s.llm_monthly_token_budget,
         "settings": {"decision_min_confidence": s.decision_min_confidence, "mo_flag_threshold": s.mo_flag_threshold,
                      "soft_link_min_similarity": s.soft_link_min_similarity,

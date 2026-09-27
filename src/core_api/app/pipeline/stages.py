@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db.models import Embedding, Entity, Fir, FirAnalysis, FirStageRun
+from ..domain.money import inr
 from ..domain.enums import DecidedBy, FirStatus, RunStatus, Stage
 from ..domain.taxonomy import get_taxonomy
 from ..extraction.accused import extract_accused, normalize_person
@@ -284,7 +285,7 @@ def _template_summary(fir: Fir, a: FirAnalysis) -> str:
         parts.append(f"on {fir.registered_at:%d %b %Y}")
     text = " ".join(parts) + "."
     if a.amount:
-        text += f" Loss about Rs {a.amount:,}."
+        text += f" Loss about {inr(a.amount)}."
     if a.mo_flags:
         text += " Method: " + ", ".join(f.replace("_", " ") for f in list(a.mo_flags)[:4]) + "."
     return text

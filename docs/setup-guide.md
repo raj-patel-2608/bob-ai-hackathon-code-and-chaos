@@ -84,20 +84,27 @@ Or open http://localhost:3000/upload and choose `src/dataset/firs_main.txt`.
 **Live-demo batch** (6 new FIRs, 3 of which join existing gangs):
 `scripts\load_dataset.ps1 -File src\dataset\demo_live_batch.txt`
 
+**Standalone set** (60 unrelated FIRs; expect no new groups):
+`scripts\load_dataset.ps1 -File src\dataset\firs_unrelated.txt`
+
+**Removing data:** on *Add FIRs*, each uploaded batch has a **Delete** button (in-page confirmation; its FIRs, analysis,
+evidence and links are removed and the groups recalculated). *Delete all data…* asks you to type `DELETE`.
+API: `DELETE /api/batches/{id}`, `POST /api/system/reset` (disabled when `CRIMEFIR_ENV=production`).
+
 ## Verifying It Works
 1. http://127.0.0.1:8100/v1/health lists `decision`, `embedding` (device `cuda` or `cpu`) and `generator`
    (`ibm/granite-4-h-small`, or unavailable with the reason if no watsonx credentials).
 2. http://127.0.0.1:8000/api/health/ready returns `"status": "ready"` and `"mode": "full"`
    (or `rules-only` if the model service is down).
 3. http://localhost:3000 shows the dashboard. After loading data you should see 400 FIRs and 12 flagged clusters.
-4. **Model Quality** page → *Evaluate test split*. You should see roughly: crime major 93%, minor 83%, evidence
+4. **AI accuracy** page → *Evaluate test split*. You should see roughly: crime major 93%, minor 83%, evidence
    extraction 100%/100%, cluster precision 100%, 11/12 gangs (numbers for the LLM tier require watsonx
    credentials).
 5. Interactive API docs: http://127.0.0.1:8000/docs
 
 **Automated tests** (no GPU or network needed; they use fake models and a temporary database):
 ```bash
-cd src/core_api      && .venv/Scripts/python -m pytest          # 26 tests incl. a full 400-FIR regression run
+cd src/core_api      && .venv/Scripts/python -m pytest          # 28 tests incl. a full 400-FIR regression run
 cd src/model_service && .venv/Scripts/python -m pytest tests    # 7 tests (GPU/CPU fallback, watsonx adapter)
 cd src/mcp_server    && .venv/Scripts/python -m pytest          # 3 tests
 python src/dataset/generator/validate.py                        # dataset / answer-key consistency

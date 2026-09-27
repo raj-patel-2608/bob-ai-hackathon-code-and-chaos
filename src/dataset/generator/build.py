@@ -37,6 +37,7 @@ TAXONOMY = json.loads((HERE.parent.parent / "shared" / "taxonomy.json").read_tex
 PERIOD_START = datetime(2026, 4, 1)
 PERIOD_END = datetime(2026, 9, 20)
 DEV_FRACTION = 0.30
+UNRELATED_COUNT = 60
 
 SECTIONS = {
     "cyber.kyc_bank_impersonation": "BNS 318(4), 319(2); IT Act 66C, 66D",
@@ -512,10 +513,31 @@ def generate():
     for c in live:
         c.split = "live_demo"
     rng.shuffle(cases)
-    return cases, live
+    # 5. standalone set (separate file): no gangs, no shared evidence with anything, generated last so the
+    #    main and live files above stay byte-identical
+    unrelated: list[Case] = []
+    minors = list(BACKGROUND_COUNTS)
+    weights = [BACKGROUND_COUNTS[m] for m in minors]
+    for _ in range(UNRELATED_COUNT):
+        minor = rng.choices(minors, weights=weights)[0]
+        present = {}
+        if minor.startswith("cyber."):
+            present = {"phone": ids.phone(), "account": ids.bank_account(), "upi": ids.upi()}
+        elif minor in ("property.snatching", "property.robbery", "property.burglary"):
+            present = {"vehicle": ids.vehicle("GJ01"), "imei": ids.imei()}
+        c = build_case(rng, ids, minor, pick_station(rng, minor),
+                       rand_date(rng, PERIOD_START, PERIOD_END, MONTH_WEIGHTS.get(minor)), present=present,
+                       require_all=False)
+        counters[c.station.code] += 1
+        c.fir_no = 100 + counters[c.station.code] * 3 + 2
+        c.fir_key = f"{c.station.district_code}-{c.station.code}-{c.registered.year}-{c.fir_no:04d}"
+        c.split = "unrelated"
+        finish_case(c, rng, ids)
+        unrelated.append(c)
+    return cases, live, unrelated
 
 
-def write_outputs(cases: list[Case], live: list[Case]) -> None:
+def write_outputs(cases: list[Case], live: list[Case], unrelated: list[Case]) -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     def write_txt(path: Path, items: list[Case]):
@@ -524,6 +546,7 @@ def write_outputs(cases: list[Case], live: list[Case]) -> None:
 
     write_txt(OUT_DIR / "firs_main.txt", cases)
     write_txt(OUT_DIR / "demo_live_batch.txt", live)
+    write_txt(OUT_DIR / "firs_unrelated.txt", unrelated)
     with open(OUT_DIR / "firs_main.jsonl", "w", encoding="utf-8", newline="\n") as f:
         for c in cases:
             f.write(json.dumps({"raw_text": c.text}, ensure_ascii=False) + "\n")
@@ -539,10 +562,13 @@ def write_outputs(cases: list[Case], live: list[Case]) -> None:
                     "firs": [truth_record(c) for c in cases]}, indent=1, ensure_ascii=False), encoding="utf-8")
     (OUT_DIR / "demo_live_ground_truth.json").write_text(
         json.dumps({**meta, "firs": [truth_record(c) for c in live]}, indent=1, ensure_ascii=False), encoding="utf-8")
-    write_card(cases, live)
+    (OUT_DIR / "unrelated_ground_truth.json").write_text(
+        json.dumps({**meta, "note": "Standalone FIRs: none may be linked to any other FIR by evidence.",
+                    "firs": [truth_record(c) for c in unrelated]}, indent=1, ensure_ascii=False), encoding="utf-8")
+    write_card(cases, live, unrelated)
 
 
-def write_card(cases: list[Case], live: list[Case]) -> None:
+def write_card(cases: list[Case], live: list[Case], unrelated: list[Case]) -> None:
     by_minor = Counter(c.minor for c in cases)
     by_station = Counter(f"{c.station.name} ({c.station.district})" for c in cases)
     by_month = Counter(c.registered.strftime("%Y-%m") for c in cases)
@@ -554,6 +580,8 @@ def write_card(cases: list[Case], live: list[Case]) -> None:
              f"{kinds['background']} background)",
              f"- Splits: dev {splits['dev']}, test {splits['test']}",
              f"- Live-demo batch: {len(live)} FIRs ({sum(1 for c in live if c.cluster_id)} attach to existing clusters)",
+             f"- Standalone set (`firs_unrelated.txt`): {len(unrelated)} FIRs with unique evidence; none should be "
+             "linked or clustered",
              f"- Period: {min(c.registered for c in cases):%d %b %Y} to {max(c.registered for c in cases):%d %b %Y}",
              "", "## Planted repeat-offender clusters", "", "| Cluster | Pattern | FIRs | Stations | Linkable by evidence |",
              "|---|---|---|---|---|"]
@@ -572,6 +600,7 @@ def write_card(cases: list[Case], live: list[Case]) -> None:
 
 
 if __name__ == "__main__":
-    main_cases, live_cases = generate()
-    write_outputs(main_cases, live_cases)
-    print(f"wrote {len(main_cases)} FIRs + {len(live_cases)} live-demo FIRs to {OUT_DIR}")
+    main_cases, live_cases, unrelated_cases = generate()
+    write_outputs(main_cases, live_cases, unrelated_cases)
+    print(f"wrote {len(main_cases)} FIRs + {len(live_cases)} live-demo FIRs + {len(unrelated_cases)} standalone FIRs "
+          f"to {OUT_DIR}")

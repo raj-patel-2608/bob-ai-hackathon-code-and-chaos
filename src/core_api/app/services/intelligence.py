@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db.models import ClusterMember, Embedding, Entity, Fir, FirAnalysis, Link, OffenderCluster
+from ..domain.money import inr
 from ..domain.enums import LinkKind
 
 log = logging.getLogger("crimefir.intelligence")
@@ -173,9 +174,9 @@ def _clusters(session: Session, graph: nx.Graph) -> int:
             score += 10
             factors.append(f"crosses {len(districts)} districts (+10)")
         if loss >= 1_000_000:
-            score += 15; factors.append(f"total loss Rs {loss:,} (+15)")
+            score += 15; factors.append(f"total loss {inr(loss)} (+15)")
         elif loss >= 100_000:
-            score += 7; factors.append(f"total loss Rs {loss:,} (+7)")
+            score += 7; factors.append(f"total loss {inr(loss)} (+7)")
         if latest and dates and (latest - max(dates)).days <= 30:
             score += 13; factors.append("active in the last 30 days of data (+13)")
         if seniors:

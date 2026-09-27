@@ -110,3 +110,13 @@ def test_full_dataset_recovers_planted_clusters(worker):
     assert m["clusters"]["recovered_exactly"] >= 11
     assert m["clusters"]["decoys_wrongly_clustered"] == 0
     assert m["clusters"]["pairwise"]["precision"] == 1.0
+
+
+def test_standalone_dataset_creates_no_links_or_clusters(worker):
+    dataset = Path(__file__).resolve().parents[2] / "dataset" / "firs_unrelated.txt"
+    with session_scope() as s:
+        assert len(ingest_content(s, dataset.read_bytes(), "firs_unrelated.txt").created) == 60
+    drain(worker, max_rounds=500)
+    with session_scope() as s:
+        assert s.scalars(select(OffenderCluster)).all() == []
+        assert s.scalars(select(Link).where(Link.kind == "EVIDENCE")).all() == []

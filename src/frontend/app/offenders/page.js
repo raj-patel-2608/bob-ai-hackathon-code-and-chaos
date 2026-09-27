@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { RiskBadge } from "../../components/Badges";
 import ErrorBox from "../../components/ErrorBox";
 import PageHeader from "../../components/PageHeader";
-import { api, fmtDate, fmtMoney, IDENTITY_LABELS } from "../../lib/api";
+import InfoTip from "../../components/InfoTip";
+import { api, fmtDate, fmtMoneyShort, IDENTITY_LABELS } from "../../lib/api";
+import { GLOSSARY } from "../../lib/glossary";
 
 export default function OffendersPage() {
   const [data, setData] = useState(null);
@@ -22,8 +24,8 @@ export default function OffendersPage() {
   const input = "bg-ink-950 border border-ink-600 px-3 py-2 text-sm text-paper-100";
   return (
     <div>
-      <PageHeader eyebrow="Flagged repeat-offender list" title="Repeat-offender clusters"
-        description="FIRs connected by shared evidence (phone, bank account, UPI ID, vehicle, online handle, accused name/alias) form a cluster, found with NetworkX. The risk score is a transparent points formula. Every cluster is a lead that needs human verification."
+      <PageHeader title="Repeat offenders"
+        description="Each group is a set of FIRs that share the same hard evidence (phone number, bank account, UPI ID, vehicle, online handle or named accused), so they probably involve the same person or gang, often across police stations and districts. Highest risk first. These are investigation leads: verify before acting."
         action={
           <div className="flex gap-2">
             <select value={station} onChange={(e) => setStation(e.target.value)} className={input}>
@@ -31,27 +33,28 @@ export default function OffendersPage() {
               {stations.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.district})</option>)}
             </select>
             <select value={minRisk} onChange={(e) => setMinRisk(e.target.value)} className={input}>
-              <option value={0}>Any risk</option>
-              <option value={35}>Medium +</option>
-              <option value={60}>High only</option>
+              <option value={0}>All risk levels</option>
+              <option value={45}>Medium and high</option>
+              <option value={70}>High only</option>
             </select>
           </div>
         } />
       <div className="p-8 space-y-4">
+        <div className="flex items-center gap-2 text-xs text-paper-500">What do HIGH / MEDIUM mean? <InfoTip text={GLOSSARY.highRisk} /></div>
         <ErrorBox error={error} />
         {!data ? <div className="text-sm text-paper-500">Loading…</div> : data.items.length === 0 ? (
-          <div className="case-panel p-6 text-sm text-paper-500">No clusters match.</div>
+          <div className="case-panel p-6 text-sm text-paper-500">No groups match these filters.</div>
         ) : data.items.map((c) => (
           <Link key={c.id} href={`/offenders/${c.id}`}
             className={`case-panel block p-5 hover:bg-ink-800/60 ${c.risk_level === "HIGH" ? "stripe-red" : c.risk_level === "MEDIUM" ? "stripe-amber" : "stripe-blue"}`}>
             <div className="flex items-start justify-between gap-6">
               <div>
                 <div className="flex items-center gap-3">
-                  <span className="font-serif text-xl text-paper-100">{c.id}</span>
+                  <span className="font-serif text-xl text-paper-100">Group {c.id}</span>
                   <RiskBadge risk={c.risk_level} score={c.risk_score} />
                 </div>
                 <div className="text-xs text-paper-500 mt-1">
-                  {c.n_firs} FIRs · {c.n_stations} police stations · {c.n_districts} district(s) · {fmtMoney(c.total_loss)} · {fmtDate(c.first_seen)} – {fmtDate(c.last_seen)}
+                  {c.n_firs} FIRs at {c.n_stations} police stations in {c.n_districts} district(s) · {fmtMoneyShort(c.total_loss)} lost · first case {fmtDate(c.first_seen)}, latest {fmtDate(c.last_seen)}
                 </div>
                 <div className="text-xs text-paper-300 mt-2">{c.stations.join(" · ")}</div>
               </div>
@@ -62,7 +65,8 @@ export default function OffendersPage() {
                 ))}
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="text-[11px] text-paper-500 mt-3 mb-1">Why this risk level:</div>
+            <div className="flex flex-wrap gap-2">
               {c.risk_factors.map((f) => <span key={f} className="text-[11px] border border-ink-600 px-2 py-0.5 text-paper-300">{f}</span>)}
             </div>
           </Link>

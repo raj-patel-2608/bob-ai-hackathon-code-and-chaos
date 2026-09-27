@@ -20,7 +20,7 @@ graph LR
 ## Components
 | Component | Technology | Responsibility |
 |---|---|---|
-| Frontend (`src/frontend`) | Next.js 16, React 19, Tailwind, d3-force | Dashboard, ingest with live progress, case files + officer review, repeat-offender clusters + graph, station briefs, model quality |
+| Frontend (`src/frontend`) | Next.js 16, React 19, Tailwind, react-force-graph-2d | Dashboard, add/delete batches with live progress, sortable case files + officer review, repeat-offender groups with network and timeline graph views, station briefs, AI accuracy and usage |
 | Core API (`src/core_api`) | Python 3.12, FastAPI, SQLAlchemy 2, NetworkX, rapidfuzz, numpy | Ingestion, rule-based evidence extraction, DB-backed job queue + worker, entity resolution, evidence/pattern links, clusters + risk, station facts/briefs, evaluation, REST API |
 | Model service (`src/model_service`) | FastAPI, PyTorch (CUDA), `laya`, sentence-transformers, httpx | Loads models once. Provider adapters chosen in `models.yaml`. GPU-first with automatic CPU fallback. Serialised GPU access (HTTP 429 when busy). |
 | Decision model | **Laya** `convaiinnovations/laya` typed-decisions (Apache 2.0) | Crime minor head (major derived), 24 MO flags, victim gender, with calibrated confidence |

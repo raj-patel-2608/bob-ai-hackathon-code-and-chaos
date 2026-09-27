@@ -106,3 +106,26 @@ def test_reprocess_llm_after_credentials_added(client, worker, fake_models):
     item = client.get("/api/firs").json()["items"][0]
     assert item["status"] == "ANALYZED" and item["decided_by"] == "llm"
     assert item["crime_minor"] == "cyber.digital_arrest"
+
+
+def test_sorting_linked_filter_and_delete_batch(client, worker):
+    first = _upload(client, [fir("0101", "Navrangpura", "Ahmedabad City", 10, KYC.format(phone="98251 77304")),
+                             fir("0102", "Adajan", "Surat City", 12, KYC.format(phone="+91-9825177304"))]).json()
+    drain(worker)
+    second = _upload(client, [fir("0103", "Gotri", "Vadodara City", 20, "Two men on a bike snatched my gold chain.")]).json()
+    drain(worker)
+
+    asc = client.get("/api/firs", params={"sort": "registered_at", "order": "asc"}).json()
+    assert [i["registered_at"][:10] for i in asc["items"]] == sorted(i["registered_at"][:10] for i in asc["items"])
+    assert asc["total"] == 3 and client.get("/api/firs", params={"limit": 1}).json()["total"] == 3
+    assert client.get("/api/firs", params={"linked": True}).json()["total"] == 2
+    assert client.get("/api/firs", params={"linked": False}).json()["total"] == 1
+    assert client.get("/api/dashboard").json()["linked_firs"] == 2
+
+    r = client.delete(f"/api/batches/{first['batch_id']}").json()
+    assert r["firs_deleted"] == 2 and r["clusters_now"] == 0
+    assert client.get("/api/firs").json()["total"] == 1
+    assert client.get("/api/offenders").json()["total"] == 0
+    assert client.get(f"/api/batches/{first['batch_id']}").status_code == 404
+    assert client.delete(f"/api/batches/{second['batch_id']}").json()["firs_deleted"] == 1
+    assert client.get("/api/stations").json() == []

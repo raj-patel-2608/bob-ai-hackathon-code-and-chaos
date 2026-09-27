@@ -8,10 +8,11 @@
     "start": "next start -p 3000"
   },
   "dependencies": {
+    "d3-force": "^3.0.0",
     "next": "^16",
     "react": "^19",
     "react-dom": "^19",
-    "d3-force": "^3.0.0"
+    "react-force-graph-2d": "^1.29.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",

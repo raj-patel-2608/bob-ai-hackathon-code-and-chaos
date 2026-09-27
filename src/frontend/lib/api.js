@@ -44,6 +44,8 @@ export const api = {
   uploadText: (text) => request("/api/batches/text", json("POST", { text })),
   batches: () => request("/api/batches"),
   batch: (id) => request(`/api/batches/${id}`),
+  deleteBatch: (id) => request(`/api/batches/${id}`, { method: "DELETE" }),
+  resetAll: () => request("/api/system/reset", { method: "POST" }),
   retryBatch: (id) => request(`/api/batches/${id}/retry-failed`, json("POST")),
   // case files
   firs: (params) => request(`/api/firs${qs(params)}`),
@@ -63,41 +65,6 @@ export const api = {
   runEvaluation: (split) => request(`/api/evaluation/run${qs({ split })}`, { method: "POST" }),
 };
 
-// Adapts the API graph ({fir|identity} nodes, EVIDENCE/PATTERN edges) to the ForceGraph component's shape.
-export function toForceGraph(graph, focusId) {
-  const nodes = (graph?.nodes || []).map((n) =>
-    n.type === "fir"
-      ? {
-          ...n,
-          type: "FIR",
-          label: n.id,
-          crime_type: n.crime_minor_label || "Unclassified",
-          date: n.registered_at ? n.registered_at.slice(0, 10) : "",
-          is_focus: n.id === focusId,
-        }
-      : {
-          id: n.id,
-          type: "ENTITY",
-          entity_type: n.identity_type,
-          label: n.label,
-          raw_value: n.label,
-        }
-  );
-  const firCount = {};
-  (graph?.edges || []).forEach((e) => {
-    if (e.kind === "EVIDENCE") firCount[e.target] = (firCount[e.target] || 0) + 1;
-  });
-  nodes.forEach((n) => {
-    if (n.type === "ENTITY") n.fir_count = firCount[n.id] || 0;
-  });
-  const edges = (graph?.edges || []).map((e) =>
-    e.kind === "EVIDENCE"
-      ? { source: e.source, target: e.target, relation: `HAS_${(e.identity_type || "ENTITY").toUpperCase()}` }
-      : { source: e.source, target: e.target, relation: "POTENTIALLY_RELATED", score: e.score }
-  );
-  return { nodes, edges };
-}
-
 export const IDENTITY_LABELS = {
   phone: "Phone",
   bank_account: "Bank account",
@@ -110,6 +77,13 @@ export const IDENTITY_LABELS = {
   claimed_identity: "Claimed identity",
 };
 
-export const fmtMoney = (n) => (n || n === 0 ? `Rs ${Number(n).toLocaleString("en-IN")}` : "—");
+export const fmtMoney = (n) => (n || n === 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "—");
+// compact Indian units for headline numbers: ₹14.22 Cr, ₹5.3 L
+export const fmtMoneyShort = (n) => {
+  if (!n && n !== 0) return "—";
+  if (n >= 1e7) return `₹${(n / 1e7).toFixed(2)} Cr`;
+  if (n >= 1e5) return `₹${(n / 1e5).toFixed(1)} L`;
+  return `₹${Number(n).toLocaleString("en-IN")}`;
+};
 export const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—");
 export const pct = (x) => (x || x === 0 ? `${Math.round(x * 100)}%` : "—");

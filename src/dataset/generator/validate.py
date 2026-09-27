@@ -107,7 +107,19 @@ def check_clusters(truth: list[dict], errors: list[str]) -> list[str]:
 def main() -> int:
     errors: list[str] = []
     main_set = check("main", "firs_main.txt", "ground_truth.json", errors)
-    check("live", "demo_live_batch.txt", "demo_live_ground_truth.json", errors)
+    live = check("live", "demo_live_batch.txt", "demo_live_ground_truth.json", errors)
+    standalone = check("unrelated", "firs_unrelated.txt", "unrelated_ground_truth.json", errors)
+    # standalone FIRs must share no identifier with any other FIR, and FIR keys must be unique across all files
+    others = {(i["type"], i["value"]) for t in main_set["truth"] + live["truth"] for i in t["identifiers"]}
+    for rec in standalone["truth"]:
+        clash = {(i["type"], i["value"]) for i in rec["identifiers"]} & others
+        if clash:
+            errors.append(f"{rec['fir_key']}: standalone FIR shares identifiers {clash}")
+        if rec["cluster_id"] or rec["decoy_of"]:
+            errors.append(f"{rec['fir_key']}: standalone FIR has a cluster/decoy label")
+    all_keys = [t["fir_key"] for t in main_set["truth"] + live["truth"] + standalone["truth"]]
+    if len(all_keys) != len(set(all_keys)):
+        errors.append("FIR keys repeat across the dataset files")
     for line in check_clusters(main_set["truth"], errors):
         print(line)
     if errors:

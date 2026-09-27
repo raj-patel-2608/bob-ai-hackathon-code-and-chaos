@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from ..db.models import (ClusterMember, Fir, FirAnalysis, Link, OffenderCluster, Station, StationReport,
                          utcnow)
+from ..domain.money import inr
 from ..domain.enums import FirStatus, LinkKind
 from ..domain.taxonomy import get_taxonomy
 from ..models_client.client import ModelUnavailable, get_model_client
@@ -44,6 +45,8 @@ def dashboard(session: Session) -> dict:
         "monthly": sorted(Counter(r.registered_at.strftime("%Y-%m") for r in rows if r.registered_at).items()),
         "links": {k: v for k, v in session.execute(select(Link.kind, func.count()).group_by(Link.kind)).all()},
         "flagged_clusters": len(clusters),
+        "clusters_by_risk": dict(Counter(c.risk_level for c in clusters)),
+        "linked_firs": session.scalar(select(func.count(func.distinct(ClusterMember.fir_id)))) or 0,
         "high_risk_clusters": sum(1 for c in clusters if c.risk_level == "HIGH"),
         "top_clusters": [cluster_brief(c) for c in clusters[:5]],
     }
@@ -122,7 +125,7 @@ def template_narrative(f: dict) -> str:
     lines = [f"Station crime brief: {f['station']} ({f['district']}), {f['period']['from']} to {f['period']['to']}."]
     change = f" ({'+' if (f['change_pct'] or 0) >= 0 else ''}{f['change_pct']}% vs previous period)" \
         if f["change_pct"] is not None else ""
-    lines.append(f"{f['firs']} FIRs registered{change}; total reported loss Rs {f['total_loss']:,}.")
+    lines.append(f"{f['firs']} FIRs registered{change}; total reported loss {inr(f['total_loss'])}.")
     if f["crime_types"]:
         top = ", ".join(f"{c['type']} ({c['count']})" for c in f["crime_types"][:3])
         lines.append(f"Main crime types: {top}.")

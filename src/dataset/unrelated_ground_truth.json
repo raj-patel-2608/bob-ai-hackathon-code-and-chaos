@@ -1,0 +1,1998 @@
+{
+ "generator": "src/dataset/generator/build.py",
+ "seed": 20260927,
+ "taxonomy_version": "1.0.0",
+ "note": "Standalone FIRs: none may be linked to any other FIR by evidence.",
+ "firs": [
+  {
+   "fir_key": "AHD-VAS-2026-0270",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-04-04",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "shop owner"
+   },
+   "amount": 58500,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+916303117572",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-CYB-2026-0234",
+   "split": "unrelated",
+   "station_code": "CYB",
+   "station": "Cyber Crime Police Station",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-02",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.kyc_bank_impersonation",
+   "mo_flags": [
+    "asked_otp_or_card_details",
+    "impersonated_bank_official",
+    "money_to_mule_account"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "female",
+    "occupation": "chartered accountant"
+   },
+   "amount": 99000,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "117318274982",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+918928970543",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "refund.help9088@axl",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+916129872276",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-MAN-2026-0204",
+   "split": "unrelated",
+   "station_code": "MAN",
+   "station": "Maninagar",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-04-21",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "student"
+   },
+   "amount": 0,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Paresh V. Patel",
+    "alias": null,
+    "as_written": "Paresh V. Patel"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0246",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-07-07",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "female",
+    "occupation": "doctor"
+   },
+   "amount": 45500,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ06TH4916",
+     "role": "property"
+    },
+    {
+     "type": "phone",
+     "value": "+917975737768",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0249",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-05-30",
+   "crime_major": "economic",
+   "crime_minor": "economic.cheating_offline",
+   "mo_flags": [
+    "advance_or_fee_payment"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "female",
+    "occupation": "businessman"
+   },
+   "amount": 502500,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+917501210885",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Bhavesh B. Patel",
+    "alias": null,
+    "as_written": "Bhavesh B. Patel"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0273",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-08-02",
+   "crime_major": "body",
+   "crime_minor": "body.intimidation",
+   "mo_flags": [
+    "verbal_threat_in_person"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "teacher"
+   },
+   "amount": 0,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Mahesh P. Rathod",
+    "alias": null,
+    "as_written": "Mahesh P. Rathod"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-SAY-2026-0231",
+   "split": "unrelated",
+   "station_code": "SAY",
+   "station": "Sayajigunj",
+   "district": "Vadodara City",
+   "registered_on": "2026-08-10",
+   "crime_major": "body",
+   "crime_minor": "body.intimidation",
+   "mo_flags": [
+    "verbal_threat_in_person"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "student"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+917724946521",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Rohit G. Vyas",
+    "alias": null,
+    "as_written": "Rohit G. Vyas"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-SAY-2026-0234",
+   "split": "unrelated",
+   "station_code": "SAY",
+   "station": "Sayajigunj",
+   "district": "Vadodara City",
+   "registered_on": "2026-04-26",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "female",
+    "occupation": "doctor"
+   },
+   "amount": 58000,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ06KM5312",
+     "role": "property"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ATH-2026-0240",
+   "split": "unrelated",
+   "station_code": "ATH",
+   "station": "Athwa",
+   "district": "Surat City",
+   "registered_on": "2026-07-28",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.marketplace",
+   "mo_flags": [
+    "fake_marketplace_listing",
+    "impersonated_army_officer",
+    "money_to_mule_account",
+    "phishing_link_or_fake_app"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "bank employee"
+   },
+   "amount": 61000,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+918794988488",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "rewardpoint7666@ibl",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0252",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-07-03",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "student"
+   },
+   "amount": 116000,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ06BE7844",
+     "role": "property"
+    },
+    {
+     "type": "phone",
+     "value": "+919187074695",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ATH-2026-0243",
+   "split": "unrelated",
+   "station_code": "ATH",
+   "station": "Athwa",
+   "district": "Surat City",
+   "registered_on": "2026-08-16",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "retired government employee"
+   },
+   "amount": 62500,
+   "identifiers": [],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-MAN-2026-0207",
+   "split": "unrelated",
+   "station_code": "MAN",
+   "station": "Maninagar",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-07-12",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "software engineer"
+   },
+   "amount": 56000,
+   "identifiers": [],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-MAN-2026-0210",
+   "split": "unrelated",
+   "station_code": "MAN",
+   "station": "Maninagar",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-07-26",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "sales executive"
+   },
+   "amount": 19000,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+919586463319",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Anil N. Bhatt",
+    "alias": null,
+    "as_written": "Anil N. Bhatt"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0255",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-04-01",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "government employee"
+   },
+   "amount": 139500,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ06WW1244",
+     "role": "property"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0240",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-05",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence",
+    "weapon_shown"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "businessman"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+919430058742",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Ashok B. Pandya",
+    "alias": null,
+    "as_written": "Ashok B. Pandya"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0243",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-05-30",
+   "crime_major": "economic",
+   "crime_minor": "economic.cheating_offline",
+   "mo_flags": [
+    "advance_or_fee_payment"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "retired government employee"
+   },
+   "amount": 808500,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Kamlesh P. Jadeja",
+    "alias": null,
+    "as_written": "Kamlesh P. Jadeja"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0246",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-08-03",
+   "crime_major": "economic",
+   "crime_minor": "economic.cheating_offline",
+   "mo_flags": [
+    "advance_or_fee_payment"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "pensioner"
+   },
+   "amount": 1148500,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Suresh G. Bhatt",
+    "alias": null,
+    "as_written": "Suresh G. Bhatt"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ATH-2026-0246",
+   "split": "unrelated",
+   "station_code": "ATH",
+   "station": "Athwa",
+   "district": "Surat City",
+   "registered_on": "2026-08-30",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence",
+    "weapon_shown"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "software engineer"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+919426955309",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Kunal N. Parmar",
+    "alias": null,
+    "as_written": "Kunal N. Parmar"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0249",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-04-06",
+   "crime_major": "property",
+   "crime_minor": "property.burglary",
+   "mo_flags": [
+    "forced_entry",
+    "premises_unoccupied"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "businessman"
+   },
+   "amount": 843000,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01PJ3379",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+919318088245",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ADJ-2026-0270",
+   "split": "unrelated",
+   "station_code": "ADJ",
+   "station": "Adajan",
+   "district": "Surat City",
+   "registered_on": "2026-08-16",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "businessman"
+   },
+   "amount": 40500,
+   "identifiers": [],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-SAT-2026-0228",
+   "split": "unrelated",
+   "station_code": "SAT",
+   "station": "Satellite",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-01",
+   "crime_major": "property",
+   "crime_minor": "property.snatching",
+   "mo_flags": [
+    "motorcycle_used"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "retired government employee"
+   },
+   "amount": 66000,
+   "identifiers": [
+    {
+     "type": "imei",
+     "value": "357121445958575",
+     "role": "property"
+    },
+    {
+     "type": "vehicle",
+     "value": "GJ01ZH6723",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+917448638110",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-SAT-2026-0231",
+   "split": "unrelated",
+   "station_code": "SAT",
+   "station": "Satellite",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-07-13",
+   "crime_major": "property",
+   "crime_minor": "property.snatching",
+   "mo_flags": [
+    "motorcycle_used"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "pensioner"
+   },
+   "amount": 111500,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01NR1295",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+916985708674",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-CYB-2026-0237",
+   "split": "unrelated",
+   "station_code": "CYB",
+   "station": "Cyber Crime Police Station",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-08-05",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.digital_arrest",
+   "mo_flags": [
+    "impersonated_police_or_agency",
+    "money_to_mule_account",
+    "threat_of_arrest_or_case"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "teacher"
+   },
+   "amount": 2782000,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "25587371763",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+918342201644",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "payout5832@okhdfcbank",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+917086637457",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0276",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-27",
+   "crime_major": "body",
+   "crime_minor": "body.intimidation",
+   "mo_flags": [
+    "verbal_threat_in_person"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "pensioner"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+918736614657",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Yash S. Prajapati",
+    "alias": null,
+    "as_written": "Yash S. Prajapati"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0258",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-07-31",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence",
+    "weapon_shown"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "teacher"
+   },
+   "amount": 0,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Kiran B. Sharma",
+    "alias": null,
+    "as_written": "Kiran B. Sharma"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ATH-2026-0249",
+   "split": "unrelated",
+   "station_code": "ATH",
+   "station": "Athwa",
+   "district": "Surat City",
+   "registered_on": "2026-06-05",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "female",
+    "occupation": "housewife"
+   },
+   "amount": 99500,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ05MG5067",
+     "role": "property"
+    },
+    {
+     "type": "phone",
+     "value": "+917296270655",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ADJ-2026-0273",
+   "split": "unrelated",
+   "station_code": "ADJ",
+   "station": "Adajan",
+   "district": "Surat City",
+   "registered_on": "2026-07-25",
+   "crime_major": "property",
+   "crime_minor": "property.burglary",
+   "mo_flags": [
+    "forced_entry",
+    "premises_unoccupied"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "delivery partner"
+   },
+   "amount": 142000,
+   "identifiers": [],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ADJ-2026-0276",
+   "split": "unrelated",
+   "station_code": "ADJ",
+   "station": "Adajan",
+   "district": "Surat City",
+   "registered_on": "2026-06-02",
+   "crime_major": "property",
+   "crime_minor": "property.snatching",
+   "mo_flags": [
+    "motorcycle_used"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "female",
+    "occupation": "housewife"
+   },
+   "amount": 154000,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01MH4399",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+918872785388",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Pratik D. Kulkarni",
+    "alias": null,
+    "as_written": "Pratik D. Kulkarni"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-MAN-2026-0213",
+   "split": "unrelated",
+   "station_code": "MAN",
+   "station": "Maninagar",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-04-02",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "pensioner"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+918367479511",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Nilesh R. Vyas",
+    "alias": null,
+    "as_written": "Nilesh R. Vyas"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-SAY-2026-0237",
+   "split": "unrelated",
+   "station_code": "SAY",
+   "station": "Sayajigunj",
+   "district": "Vadodara City",
+   "registered_on": "2026-04-03",
+   "crime_major": "property",
+   "crime_minor": "property.snatching",
+   "mo_flags": [
+    "motorcycle_used"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "female",
+    "occupation": "chartered accountant"
+   },
+   "amount": 43000,
+   "identifiers": [
+    {
+     "type": "imei",
+     "value": "351365090317761",
+     "role": "property"
+    },
+    {
+     "type": "vehicle",
+     "value": "GJ01YF9654",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+917885941463",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Rohit N. Solanki",
+    "alias": null,
+    "as_written": "Rohit N. Solanki"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-SAY-2026-0240",
+   "split": "unrelated",
+   "station_code": "SAY",
+   "station": "Sayajigunj",
+   "district": "Vadodara City",
+   "registered_on": "2026-07-20",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.job_task",
+   "mo_flags": [
+    "advance_or_fee_payment",
+    "money_to_mule_account",
+    "paid_tasks_or_job_offer"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "pensioner"
+   },
+   "amount": 302000,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "796807559157",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "helpdesk1683@okhdfcbank",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0261",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-05-15",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "female",
+    "occupation": "businessman"
+   },
+   "amount": 98000,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ06PF5673",
+     "role": "property"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0264",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-07-28",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "businessman"
+   },
+   "amount": 10000,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+917803859862",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ATH-2026-0252",
+   "split": "unrelated",
+   "station_code": "ATH",
+   "station": "Athwa",
+   "district": "Surat City",
+   "registered_on": "2026-04-07",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "retired bank clerk"
+   },
+   "amount": 15000,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+919499231571",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0279",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-05-02",
+   "crime_major": "property",
+   "crime_minor": "property.burglary",
+   "mo_flags": [
+    "forced_entry",
+    "premises_unoccupied"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "software engineer"
+   },
+   "amount": 188500,
+   "identifiers": [
+    {
+     "type": "imei",
+     "value": "351313052661180",
+     "role": "property"
+    },
+    {
+     "type": "vehicle",
+     "value": "GJ01ZC4576",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+918321314881",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-MAN-2026-0216",
+   "split": "unrelated",
+   "station_code": "MAN",
+   "station": "Maninagar",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-17",
+   "crime_major": "property",
+   "crime_minor": "property.snatching",
+   "mo_flags": [
+    "motorcycle_used"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "sales executive"
+   },
+   "amount": 84500,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01YM7877",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+919346234511",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ADJ-2026-0279",
+   "split": "unrelated",
+   "station_code": "ADJ",
+   "station": "Adajan",
+   "district": "Surat City",
+   "registered_on": "2026-05-16",
+   "crime_major": "property",
+   "crime_minor": "property.burglary",
+   "mo_flags": [
+    "forced_entry",
+    "premises_unoccupied"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "delivery partner"
+   },
+   "amount": 92000,
+   "identifiers": [
+    {
+     "type": "imei",
+     "value": "352663048348766",
+     "role": "property"
+    },
+    {
+     "type": "vehicle",
+     "value": "GJ01VJ5334",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+916361279962",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0252",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-05-17",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "businessman"
+   },
+   "amount": 100500,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01AU1356",
+     "role": "property"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-SAT-2026-0234",
+   "split": "unrelated",
+   "station_code": "SAT",
+   "station": "Satellite",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-13",
+   "crime_major": "property",
+   "crime_minor": "property.burglary",
+   "mo_flags": [
+    "forced_entry",
+    "premises_unoccupied"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "retired bank clerk"
+   },
+   "amount": 118000,
+   "identifiers": [
+    {
+     "type": "imei",
+     "value": "352439855084137",
+     "role": "property"
+    },
+    {
+     "type": "vehicle",
+     "value": "GJ01JW8363",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+917287391609",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0267",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-08-05",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "teacher"
+   },
+   "amount": 50000,
+   "identifiers": [],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-SAY-2026-0243",
+   "split": "unrelated",
+   "station_code": "SAY",
+   "station": "Sayajigunj",
+   "district": "Vadodara City",
+   "registered_on": "2026-08-17",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "student"
+   },
+   "amount": 29000,
+   "identifiers": [],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ATH-2026-0255",
+   "split": "unrelated",
+   "station_code": "ATH",
+   "station": "Athwa",
+   "district": "Surat City",
+   "registered_on": "2026-04-19",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "textile trader"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+917253468500",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Ketan H. Dave",
+    "alias": null,
+    "as_written": "Ketan H. Dave"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ADJ-2026-0282",
+   "split": "unrelated",
+   "station_code": "ADJ",
+   "station": "Adajan",
+   "district": "Surat City",
+   "registered_on": "2026-08-17",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.digital_arrest",
+   "mo_flags": [
+    "impersonated_police_or_agency",
+    "money_to_mule_account",
+    "threat_of_arrest_or_case"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "government employee"
+   },
+   "amount": 1090000,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "53972075434812",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+916825157891",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "helpdesk2024@ybl",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0282",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-03",
+   "crime_major": "property",
+   "crime_minor": "property.burglary",
+   "mo_flags": [
+    "forced_entry",
+    "premises_unoccupied"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "female",
+    "occupation": "bank employee"
+   },
+   "amount": 734500,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+918395698131",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0270",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-09-11",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.marketplace",
+   "mo_flags": [
+    "advance_or_fee_payment",
+    "fake_marketplace_listing",
+    "impersonated_army_officer",
+    "money_to_mule_account"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "student"
+   },
+   "amount": 95000,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+917295966553",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "loanfix7717@ybl",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0255",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-04",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "retired bank clerk"
+   },
+   "amount": 37000,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+918662810396",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ADJ-2026-0285",
+   "split": "unrelated",
+   "station_code": "ADJ",
+   "station": "Adajan",
+   "district": "Surat City",
+   "registered_on": "2026-09-16",
+   "crime_major": "body",
+   "crime_minor": "body.intimidation",
+   "mo_flags": [
+    "verbal_threat_in_person"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "bank employee"
+   },
+   "amount": 0,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Gurpreet M. Shah",
+    "alias": null,
+    "as_written": "Gurpreet M. Shah"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0258",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-05",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence",
+    "weapon_shown"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "government employee"
+   },
+   "amount": 0,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Tushar J. Sharma",
+    "alias": null,
+    "as_written": "Tushar J. Sharma"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-CYB-2026-0240",
+   "split": "unrelated",
+   "station_code": "CYB",
+   "station": "Cyber Crime Police Station",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-26",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.job_task",
+   "mo_flags": [
+    "advance_or_fee_payment",
+    "money_to_mule_account",
+    "paid_tasks_or_job_offer"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "female",
+    "occupation": "housewife"
+   },
+   "amount": 455500,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "3964589468910217",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "helpdesk6783@paytm",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0261",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-10",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.kyc_bank_impersonation",
+   "mo_flags": [
+    "asked_otp_or_card_details",
+    "impersonated_bank_official",
+    "money_to_mule_account"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "retired bank clerk"
+   },
+   "amount": 340500,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "50338197055",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+916992766036",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "trustpay4196@okaxis",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0285",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-01",
+   "crime_major": "property",
+   "crime_minor": "property.burglary",
+   "mo_flags": [
+    "forced_entry",
+    "premises_unoccupied"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "shop owner"
+   },
+   "amount": 368000,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+919679266255",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0288",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-14",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "student"
+   },
+   "amount": 16500,
+   "identifiers": [],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-SAY-2026-0246",
+   "split": "unrelated",
+   "station_code": "SAY",
+   "station": "Sayajigunj",
+   "district": "Vadodara City",
+   "registered_on": "2026-08-06",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.investment_trading",
+   "mo_flags": [
+    "fake_relationship_or_marriage",
+    "money_to_mule_account",
+    "phishing_link_or_fake_app",
+    "promise_of_high_returns"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "student"
+   },
+   "amount": 3151500,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "5725779034147124",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+918755624528",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0291",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-14",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "textile trader"
+   },
+   "amount": 89000,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01CY1629",
+     "role": "property"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-CYB-2026-0243",
+   "split": "unrelated",
+   "station_code": "CYB",
+   "station": "Cyber Crime Police Station",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-06-08",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.job_task",
+   "mo_flags": [
+    "advance_or_fee_payment",
+    "money_to_mule_account",
+    "paid_tasks_or_job_offer"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "female",
+    "occupation": "government employee"
+   },
+   "amount": 502500,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "4770533963418227",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "refund.help1390@paytm",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+919100411380",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0273",
+   "split": "unrelated",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-05-28",
+   "crime_major": "body",
+   "crime_minor": "body.intimidation",
+   "mo_flags": [
+    "verbal_threat_in_person"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "businessman"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+919188633898",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Bhavesh B. Jadeja",
+    "alias": null,
+    "as_written": "Bhavesh B. Jadeja"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-SAT-2026-0237",
+   "split": "unrelated",
+   "station_code": "SAT",
+   "station": "Satellite",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-07-10",
+   "crime_major": "property",
+   "crime_minor": "property.vehicle_theft",
+   "mo_flags": [
+    "vehicle_taken_from_parking"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "female",
+    "occupation": "delivery partner"
+   },
+   "amount": 105000,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01UH1962",
+     "role": "property"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-NAV-2026-0264",
+   "split": "unrelated",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-19",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.job_task",
+   "mo_flags": [
+    "advance_or_fee_payment",
+    "money_to_mule_account",
+    "paid_tasks_or_job_offer"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "male",
+    "occupation": "retired bank clerk"
+   },
+   "amount": 524500,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "9770672182394081",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "refund.help5340@ybl",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0294",
+   "split": "unrelated",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-17",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.job_task",
+   "mo_flags": [
+    "advance_or_fee_payment",
+    "money_to_mule_account",
+    "paid_tasks_or_job_offer",
+    "promise_of_high_returns"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "retired teacher"
+   },
+   "amount": 448500,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "788332874418150",
+     "role": "offender"
+    },
+    {
+     "type": "upi_id",
+     "value": "refund.help2956@paytm",
+     "role": "offender"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ADJ-2026-0288",
+   "split": "unrelated",
+   "station_code": "ADJ",
+   "station": "Adajan",
+   "district": "Surat City",
+   "registered_on": "2026-04-07",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence",
+    "weapon_shown"
+   ],
+   "victim": {
+    "age_group": "31_45",
+    "gender": "male",
+    "occupation": "teacher"
+   },
+   "amount": 0,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+919627784422",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Hasmukhbhai S. Thakkar",
+    "alias": null,
+    "as_written": "Hasmukhbhai S. Thakkar"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  }
+ ]
+}

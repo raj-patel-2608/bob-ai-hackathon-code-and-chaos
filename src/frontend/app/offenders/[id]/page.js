@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CrimeTag, LinkBadge, RiskBadge } from "../../../components/Badges";
+import { LinkBadge, RiskBadge } from "../../../components/Badges";
 import ErrorBox from "../../../components/ErrorBox";
-import ForceGraph from "../../../components/ForceGraph";
+import InvestigationGraph from "../../../components/InvestigationGraph";
 import PageHeader from "../../../components/PageHeader";
-import { api, fmtDate, fmtMoney, IDENTITY_LABELS, toForceGraph } from "../../../lib/api";
+import { api, fmtDate, fmtMoney, fmtMoneyShort, IDENTITY_LABELS } from "../../../lib/api";
 
 export default function ClusterPage() {
   const { id } = useParams();
@@ -17,7 +17,7 @@ export default function ClusterPage() {
 
   useEffect(() => {
     api.offender(id).then(setC).catch((e) => setError(e.message));
-    api.graph({ cluster_id: id, include_pattern: false }).then((g) => setGraph(toForceGraph(g))).catch(() => {});
+    api.graph({ cluster_id: id, include_pattern: false }).then(setGraph).catch(() => {});
   }, [id]);
 
   if (error) return <div className="p-8"><ErrorBox error={error} /></div>;
@@ -25,14 +25,14 @@ export default function ClusterPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="Flagged repeat-offender cluster" title={c.id}
-        description={`${c.n_firs} FIRs across ${c.n_stations} police stations in ${c.n_districts} district(s), ${fmtDate(c.first_seen)} – ${fmtDate(c.last_seen)}, total reported loss ${fmtMoney(c.total_loss)}.`}
+      <PageHeader eyebrow="Repeat-offender group" title={`Group ${c.id}`}
+        description={`${c.n_firs} FIRs at ${c.n_stations} police stations in ${c.n_districts} district(s), from ${fmtDate(c.first_seen)} to ${fmtDate(c.last_seen)}, total reported loss ${fmtMoneyShort(c.total_loss)}. They are connected by the shared evidence listed on the right.`}
         action={<RiskBadge risk={c.risk_level} score={c.risk_score} />} />
       <div className="p-8 grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
-          <div className="case-panel p-2">{graph ? <ForceGraph graph={graph} /> : <div className="p-8 text-sm text-paper-500">Loading graph…</div>}</div>
+          <div className="case-panel p-3">{graph ? <InvestigationGraph graph={graph} height={480} initialMode="timeline" /> : <div className="p-8 text-sm text-paper-500">Loading graph…</div>}</div>
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-3">Timeline of linked FIRs</div>
+            <div className="text-sm text-paper-100 font-medium mb-3">The FIRs in order of date</div>
             <div className="divide-y divide-ink-700">
               {c.timeline.map((f) => (
                 <Link key={f.id} href={`/firs/${encodeURIComponent(f.id)}`} className="py-2.5 flex justify-between gap-4 hover:bg-ink-800/50 px-1">
@@ -40,7 +40,7 @@ export default function ClusterPage() {
                     <span className="data-id text-sm text-paper-100">{f.id}</span>
                     <div className="text-xs text-paper-500">{fmtDate(f.registered_at)} · {f.station} ({f.district}) · {fmtMoney(f.amount)}</div>
                   </div>
-                  <CrimeTag>{f.crime_minor_label}</CrimeTag>
+                  <span className="text-xs text-paper-300">{f.crime_minor_label}</span>
                 </Link>
               ))}
             </div>
@@ -62,22 +62,22 @@ export default function ClusterPage() {
         </div>
         <div className="space-y-6">
           <div className="case-panel stripe-red p-5">
-            <div className="text-sm text-paper-100 font-medium mb-3">Key identifiers</div>
+            <div className="text-sm text-paper-100 font-medium mb-3">Shared evidence (what links them)</div>
             {c.key_identifiers.map((k) => (
               <div key={k.value} className="text-xs mb-2">
-                <div className="text-paper-500">{IDENTITY_LABELS[k.type] || k.type} · in {k.fir_count} FIRs · centrality {k.centrality}</div>
+                <div className="text-paper-500">{IDENTITY_LABELS[k.type] || k.type} · appears in {k.fir_count} FIRs</div>
                 <Link href={`/firs?q=${encodeURIComponent(k.value)}`} className="data-id text-paper-100 hover:text-signal-amber">{k.value}</Link>
               </div>
             ))}
             {c.claimed_identities?.length ? (
               <div className="text-xs mt-3 border-t border-ink-700 pt-3">
-                <div className="text-paper-500 mb-1">Identities the offender claimed (signature only)</div>
+                <div className="text-paper-500 mb-1">Names the caller claimed to be (a signature, not proof of identity)</div>
                 {c.claimed_identities.map((x) => <div key={x.value} className="text-paper-300">· {x.value} ({x.firs} FIRs)</div>)}
               </div>
             ) : null}
           </div>
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-3">Risk factors</div>
+            <div className="text-sm text-paper-100 font-medium mb-3">Why this risk level</div>
             {c.risk_factors.map((f) => <div key={f} className="text-xs text-paper-300 mb-1">· {f}</div>)}
           </div>
           <div className="case-panel stripe-green p-5">

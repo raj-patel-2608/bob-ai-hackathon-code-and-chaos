@@ -5,87 +5,85 @@ import { useEffect, useState } from "react";
 import BarList from "../components/BarList";
 import { RiskBadge } from "../components/Badges";
 import ErrorBox from "../components/ErrorBox";
+import InfoTip from "../components/InfoTip";
 import PageHeader from "../components/PageHeader";
-import Sparkline from "../components/Sparkline";
 import StatCard from "../components/StatCard";
-import { api, fmtDate, fmtMoney, IDENTITY_LABELS } from "../lib/api";
+import { api, fmtDate, fmtMoneyShort, IDENTITY_LABELS } from "../lib/api";
+import { GLOSSARY } from "../lib/glossary";
 
 export default function DashboardPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    api.dashboard().then(setData).catch((e) => setError(e.message));
-  }, []);
+  useEffect(() => { api.dashboard().then(setData).catch((e) => setError(e.message)); }, []);
 
   if (error) return <div className="p-8"><ErrorBox error={error} /></div>;
-  if (!data) return <div className="p-8 text-paper-500 text-sm">Loading dashboard…</div>;
+  if (!data) return <div className="p-8 text-paper-500 text-sm">Loading…</div>;
 
   if (data.total_firs === 0) {
     return (
       <div>
-        <PageHeader eyebrow="Overview" title="Investigation dashboard" description="No FIRs ingested yet." />
+        <PageHeader title="Dashboard" description="No FIRs yet." />
         <div className="p-8">
           <div className="case-panel stripe-amber p-8 max-w-xl">
-            <div className="font-serif text-xl text-paper-100 mb-2">Nothing to show yet</div>
+            <div className="font-serif text-xl text-paper-100 mb-2">Start by adding FIRs</div>
             <p className="text-sm text-paper-500 mb-5">
-              Upload a batch of FIRs (for example <span className="data-id">src/dataset/firs_main.txt</span>) to see
-              crime classification, evidence links and flagged repeat-offender clusters.
+              Upload a file of FIRs (for example <span className="data-id">src/dataset/firs_main.txt</span>) or paste FIR
+              text. CrimeFIR reads each FIR, classifies the crime and finds cases that are connected by the same evidence.
             </p>
-            <Link href="/upload" className="bg-signal-amber text-ink-950 text-sm font-medium px-4 py-2">
-              Ingest FIRs
-            </Link>
+            <Link href="/upload" className="bg-signal-amber text-ink-950 text-sm font-medium px-4 py-2">Add FIRs</Link>
           </div>
         </div>
       </div>
     );
   }
 
-  const byMajor = Object.fromEntries(data.crime_major.map((c) => [c.label, c.count]));
-  const byMinor = Object.fromEntries(data.crime_minor.slice(0, 10).map((c) => [c.label, c.count]));
-  const byStation = Object.fromEntries(data.stations.map((s) => [`${s.station} (${s.district})`, s.count]));
-  const monthly = Object.fromEntries(data.monthly);
+  const high = data.clusters_by_risk?.HIGH || 0;
+  const standalone = data.total_firs - (data.linked_firs || 0);
+  const categories = Object.fromEntries(data.crime_major.map((c) => [c.label, c.count]));
+  const stations = Object.fromEntries(data.stations.slice(0, 6).map((s) => [`${s.station} (${s.district})`, s.count]));
 
   return (
     <div>
-      <PageHeader
-        eyebrow="Overview"
-        title="Investigation dashboard"
-        description="Crime intelligence across every ingested FIR: classification, evidence links between stations and districts, and flagged repeat-offender clusters."
-      />
+      <PageHeader title="Dashboard"
+        description="What needs attention across all FIRs: groups of cases that point to the same offender, and cases the AI was unsure about." />
       <div className="p-8 space-y-8">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <StatCard label="FIRs analysed" value={data.total_firs} stripe="blue" />
-          <StatCard label="Flagged clusters" value={data.flagged_clusters} sub={`${data.high_risk_clusters} high risk`} stripe="red" />
-          <StatCard label="Evidence links" value={data.links?.EVIDENCE || 0} sub={`${data.links?.PATTERN || 0} pattern-only`} stripe="amber" />
-          <StatCard label="Awaiting review" value={data.needs_review} sub="low-confidence classifications" stripe="amber" />
-          <StatCard label="Reported loss" value={fmtMoney(data.total_loss)} stripe="green" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard label="FIRs analysed" value={data.total_firs} stripe="blue" href="/firs"
+            sub={`${data.linked_firs || 0} linked to a group · ${standalone} standalone`} />
+          <StatCard label="Repeat-offender groups" value={data.flagged_clusters} stripe="red" href="/offenders"
+            sub={`${high} high risk`} info={GLOSSARY.group} />
+          <StatCard label="Need officer check" value={data.needs_review} stripe="amber" href="/firs?needs_review=true"
+            sub={data.needs_review ? "AI was not sure of the crime type" : "nothing pending"} info={GLOSSARY.review} />
+          <StatCard label="Money reported lost" value={fmtMoneyShort(data.total_loss)} stripe="green"
+            sub="total across all FIRs" />
         </div>
 
         <div className="case-panel p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-sm text-paper-100 font-medium">Top flagged repeat-offender clusters</div>
-            <Link href="/offenders" className="text-xs text-signal-amber hover:underline">All clusters ›</Link>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2 text-sm text-paper-100 font-medium">
+              Act on these first: highest-risk repeat-offender groups <InfoTip text={GLOSSARY.highRisk} />
+            </div>
+            <Link href="/offenders" className="text-xs text-signal-amber hover:underline">See all {data.flagged_clusters} ›</Link>
           </div>
+          <div className="text-xs text-paper-500 mb-3">Each group is a set of FIRs, often from different police stations, that share the same phone, bank account, UPI ID or vehicle.</div>
           <div className="divide-y divide-ink-700">
             {data.top_clusters.map((c) => (
               <Link key={c.id} href={`/offenders/${c.id}`} className="py-3 flex items-start justify-between gap-4 hover:bg-ink-800/50 px-2">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="data-id text-paper-100">{c.id}</span>
-                    <RiskBadge risk={c.risk_level} score={c.risk_score} />
+                    <span className="data-id text-paper-100">Group {c.id}</span>
+                    <RiskBadge risk={c.risk_level} />
                   </div>
-                  <div className="text-xs text-paper-500 mt-1">
-                    {c.n_firs} FIRs · {c.n_stations} stations · {c.n_districts} districts · {fmtMoney(c.total_loss)} ·{" "}
-                    {fmtDate(c.first_seen)} – {fmtDate(c.last_seen)}
+                  <div className="text-xs text-paper-300 mt-1">
+                    {c.n_firs} FIRs at {c.n_stations} police stations in {c.n_districts} district{c.n_districts > 1 ? "s" : ""} ·
+                    {" "}{fmtMoneyShort(c.total_loss)} lost · latest case {fmtDate(c.last_seen)}
                   </div>
                 </div>
-                <div className="text-xs text-paper-300 text-right max-w-sm">
+                <div className="text-xs text-right">
+                  <div className="text-paper-500">shared evidence</div>
                   {(c.key_identifiers || []).slice(0, 2).map((k) => (
-                    <div key={k.value}>
-                      <span className="text-paper-500">{IDENTITY_LABELS[k.type] || k.type}:</span>{" "}
-                      <span className="data-id">{k.value}</span>
-                    </div>
+                    <div key={k.value} className="text-paper-300"><span className="text-paper-500">{IDENTITY_LABELS[k.type]}:</span> <span className="data-id">{k.value}</span></div>
                   ))}
                 </div>
               </Link>
@@ -95,24 +93,16 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-4">Crime type (major head)</div>
-            <BarList data={byMajor} colorClass="bg-signal-blue" />
-            <div className="text-sm text-paper-100 font-medium mt-6 mb-4">Top minor heads</div>
-            <BarList data={byMinor} colorClass="bg-signal-blue" />
+            <div className="flex items-center gap-2 text-sm text-paper-100 font-medium mb-4">FIRs by crime category <InfoTip text={GLOSSARY.crimeCategory} /></div>
+            <BarList data={categories} colorClass="bg-signal-blue" />
           </div>
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-4">FIRs by police station</div>
-            <BarList data={byStation} colorClass="bg-signal-amber" />
-            <div className="text-sm text-paper-100 font-medium mt-6 mb-2">Decided by</div>
-            <div className="text-xs text-paper-500">
-              {Object.entries(data.decided_by).map(([k, v]) => `${k}: ${v}`).join(" · ")}
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-sm text-paper-100 font-medium">Busiest police stations</div>
+              <Link href="/stations" className="text-xs text-signal-amber hover:underline">Station briefs ›</Link>
             </div>
+            <BarList data={stations} colorClass="bg-signal-amber" />
           </div>
-        </div>
-
-        <div className="case-panel p-5">
-          <div className="text-sm text-paper-100 font-medium mb-4">FIRs registered per month</div>
-          <Sparkline data={monthly} />
         </div>
       </div>
     </div>

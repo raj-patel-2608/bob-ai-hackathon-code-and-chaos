@@ -61,7 +61,7 @@ through our MCP server. [More in docs/solution-overview.md](docs/solution-overvi
 | Category | Technologies |
 |---|---|
 | **Languages** | Python 3.12, JavaScript (React) |
-| **Frameworks** | FastAPI, SQLAlchemy 2, Next.js 16 / React 19, Tailwind, d3-force, NetworkX, PyTorch, sentence-transformers, MCP Python SDK |
+| **Frameworks** | FastAPI, SQLAlchemy 2, Next.js 16 / React 19, Tailwind, react-force-graph (canvas graph), NetworkX, PyTorch, sentence-transformers, MCP Python SDK |
 | **IBM Technologies** | IBM Bob (IDE + Bob Shell, MCP, custom mode), IBM watsonx.ai, IBM Granite 4 (`granite-4-h-small`), IBM Granite Embedding (`granite-embedding-30m-english`) |
 | **Databases** | SQLite (WAL; PostgreSQL-ready through SQLAlchemy) |
 | **Other** | Laya decision model (Convai Innovations, Apache 2.0), rapidfuzz, numpy, pytest |

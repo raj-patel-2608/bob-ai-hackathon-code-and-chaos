@@ -67,7 +67,7 @@ Investigators can query all of it in plain English through IBM Bob.**
    written as … and …").
 4. **Repeat offenders:** risk-ranked clusters, each with a graph, timeline, key identifiers, risk factors and
    suggested actions (freeze/trail requests, CDRs, ANPR, joint investigation).
-5. **Station briefs** for the SHO, and **Model quality** with measured accuracy and model/GPU status.
+5. **Station briefs** for the SHO, and **AI accuracy** with measured accuracy, who decided each FIR (Laya / Granite / rules), watsonx usage and model/GPU status.
 6. **IBM Bob:** plain-English questions answered with FIR ids.
 
 ## Measured results (held-out test split: 305 FIRs never used for tuning)

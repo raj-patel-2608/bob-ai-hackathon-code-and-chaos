@@ -115,7 +115,8 @@ def evaluate(session: Session, split: str = "test", dataset_dir: Path = DATASET_
             true_pairs.add((a, b))
     members = defaultdict(list)
     for fid, cid in pred_cluster.items():
-        members[cid].append(fid)
+        if fid in gt_of:            # FIRs outside the answer key (e.g. the live-demo batch) cannot be scored
+            members[cid].append(fid)
     pred_pairs = {tuple(sorted(p)) for m in members.values() for p in itertools.combinations(m, 2)}
     tp = len(pred_pairs & true_pairs)
     gt_clusters = defaultdict(set)

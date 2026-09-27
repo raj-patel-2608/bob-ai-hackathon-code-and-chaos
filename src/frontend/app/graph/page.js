@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import ErrorBox from "../../components/ErrorBox";
-import ForceGraph from "../../components/ForceGraph";
+import InfoTip from "../../components/InfoTip";
+import InvestigationGraph from "../../components/InvestigationGraph";
 import PageHeader from "../../components/PageHeader";
-import { api, toForceGraph } from "../../lib/api";
+import { api } from "../../lib/api";
+import { GLOSSARY } from "../../lib/glossary";
 
 function GraphInner() {
   const params = useSearchParams();
@@ -19,33 +21,31 @@ function GraphInner() {
   useEffect(() => {
     setGraph(null);
     api.graph({ fir_id: fir, cluster_id: cluster, include_pattern: includePattern })
-      .then((g) => setGraph(toForceGraph(g, fir)))
-      .catch((e) => setError(e.message));
+      .then(setGraph).catch((e) => setError(e.message));
   }, [fir, cluster, includePattern]);
 
-  const firs = graph?.nodes.filter((n) => n.type === "FIR").length || 0;
-  const identities = graph?.nodes.filter((n) => n.type === "ENTITY").length || 0;
+  const firs = graph?.nodes.filter((n) => n.type === "fir").length || 0;
+  const identities = graph?.nodes.filter((n) => n.type === "identity").length || 0;
 
   return (
     <div>
-      <PageHeader eyebrow="Investigation graph"
-        title={fir ? `Around ${fir}` : cluster ? `Cluster ${cluster}` : "All linked FIRs"}
-        description="FIR nodes connect to the shared identifiers (bridge nodes) that link them. Dashed amber edges are pattern-only similarity, hidden by default. Scroll to zoom, drag to pan, click a node for details."
+      <PageHeader title={fir ? `Links around ${fir}` : cluster ? `Group ${cluster}` : "Link graph"}
+        description="Circles are FIRs, diamonds are the evidence they share (phone, bank account, UPI ID, vehicle…). Hover to focus, click for details, scroll to zoom, drag to move. Switch to Timeline view to see which case came first and where the same evidence appeared next."
         action={
           <div className="flex items-center gap-3">
             <label className="text-xs text-paper-300 flex items-center gap-2">
               <input type="checkbox" checked={includePattern} onChange={(e) => setIncludePattern(e.target.checked)} />
-              show pattern-only links
+              also show similar-story links <InfoTip text={GLOSSARY.patternLink} align="right" />
             </label>
-            {fir || cluster ? <Link href="/graph" className="border border-signal-blue text-signal-blue text-xs px-3 py-2">Full graph</Link> : null}
+            {fir || cluster ? <Link href="/graph" className="border border-signal-blue text-signal-blue text-xs px-3 py-2">Show all</Link> : null}
           </div>
         } />
-      <div className="p-8 space-y-4">
-        <div className="text-xs text-paper-500">{firs} FIRs · {identities} shared identifiers</div>
+      <div className="p-8 space-y-3">
+        <div className="text-xs text-paper-500">{firs} FIRs · {identities} pieces of shared evidence</div>
         <ErrorBox error={error} />
         {!graph ? <div className="case-panel p-12 text-center text-sm text-paper-500">Building graph…</div>
-          : graph.nodes.length === 0 ? <div className="case-panel p-8 text-sm text-paper-500">No links yet.</div>
-          : <div className="case-panel p-2"><ForceGraph graph={graph} /></div>}
+          : graph.nodes.length === 0 ? <div className="case-panel p-8 text-sm text-paper-500">No linked FIRs yet.</div>
+          : <div className="case-panel p-3"><InvestigationGraph graph={graph} focusId={fir} height={640} /></div>}
       </div>
     </div>
   );
