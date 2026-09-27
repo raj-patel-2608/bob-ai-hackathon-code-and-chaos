@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from ..domain.taxonomy import Taxonomy
 
@@ -110,11 +110,51 @@ class LlmAccused(BaseModel):
     description: str | None = None
     claimed_identity: bool = False
 
+    @model_validator(mode="before")
+    @classmethod
+    def _tolerate(cls, data):
+        """Models sometimes put the claimed role in claimed_identity or write 'Unknown' as a name."""
+        if not isinstance(data, dict):
+            return data
+        data = dict(data)
+        claimed = data.get("claimed_identity")
+        if isinstance(claimed, str) and claimed.strip().lower() not in ("false", "no", "", "none"):
+            if claimed.strip().lower() not in ("true", "yes"):
+                data["description"] = data.get("description") or claimed
+            data["claimed_identity"] = True
+        for key in ("name", "alias"):
+            value = data.get(key)
+            if isinstance(value, str) and re.fullmatch(r"\s*(unknown|not known|n/?a|none|unidentified)\s*", value, re.I):
+                data[key] = None
+        return data
+
 
 class LlmVictim(BaseModel):
     gender: Literal["male", "female", "other", "unknown"] = "unknown"
     age_group: Literal["below_18", "18_30", "31_45", "46_60", "above_60", "unknown"] = "unknown"
     occupation: str | None = None
+
+    @field_validator("gender", mode="before")
+    @classmethod
+    def _gender(cls, v):
+        v = str(v or "unknown").strip().lower()
+        return {"m": "male", "man": "male", "f": "female", "woman": "female"}.get(v, v)
+
+    @field_validator("age_group", mode="before")
+    @classmethod
+    def _age_group(cls, v):
+        """Accept '67', '30-40', 'senior citizen' etc. by mapping the (mean) age onto the allowed groups."""
+        text = str(v or "unknown").strip().lower().replace("-", "_") if v is not None else "unknown"
+        if text in {"below_18", "18_30", "31_45", "46_60", "above_60", "unknown"}:
+            return text
+        if "senior" in text:
+            return "above_60"
+        nums = [int(n) for n in re.findall(r"\d+", text)]
+        if not nums:
+            return "unknown"
+        age = sum(nums) / len(nums)
+        return "below_18" if age < 18 else "18_30" if age <= 30 else "31_45" if age <= 45 else \
+            "46_60" if age <= 60 else "above_60"
 
 
 class LlmEnrichment(BaseModel):
@@ -141,8 +181,9 @@ def llm_messages(tax: Taxonomy, narrative: str, header_hint: str) -> tuple[str, 
     prompt = (f"Allowed crime_minor values:\n{minors}\n\nAllowed mo_flags values (choose all that apply):\n{flags}\n\n"
               "JSON fields: crime_minor (one allowed value), mo_flags (list of allowed values), accused (list of "
               "{name, alias, description, claimed_identity}; claimed_identity=true when the name is only what a "
-              "fraudster claimed to be), victim {gender, age_group, occupation}, summary (2 factual sentences, "
-              "no speculation).\n\n"
+              "fraudster claimed to be), victim {gender: one of male|female|other|unknown, age_group: one of "
+              "below_18|18_30|31_45|46_60|above_60|unknown, occupation}, summary (2 factual sentences, "
+              "no speculation). Use the exact lower-case codes given.\n\n"
               f"FIR header facts: {header_hint or 'not available'}\n\nFIR narrative:\n\"\"\"{narrative}\"\"\"")
     return system, prompt, LlmEnrichment.model_json_schema()
 

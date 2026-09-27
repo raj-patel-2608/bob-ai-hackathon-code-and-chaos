@@ -57,7 +57,7 @@ def test_low_confidence_goes_to_llm(worker, fake_models):
         "accused": [{"name": "Vikram Rathore", "claimed_identity": True}],
         "victim": {"gender": "male", "age_group": "above_60", "occupation": "retired"},
         "summary": "Victim was kept on a video call by a fake officer and transferred money."}}
-    ingest([fir("0201", "Vastrapur", "Ahmedabad City", 3, "LOWCONF strange call about a parcel, money sent.")])
+    ingest([fir("0201", "Vastrapur", "Ahmedabad City", 3, "LOWCONF strange call about a parcel from Inspector Vikram Rathore, money sent.")])
     drain(worker)
     with session_scope() as s:
         a = s.scalars(select(FirAnalysis)).one()

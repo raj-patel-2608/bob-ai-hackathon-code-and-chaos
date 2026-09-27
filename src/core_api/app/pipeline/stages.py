@@ -3,6 +3,7 @@ finish every one of them (succeeded / skipped / failed-with-retry)."""
 from __future__ import annotations
 
 import hashlib
+import re
 import logging
 import numpy as np
 from sqlalchemy import delete, select
@@ -168,7 +169,13 @@ def run_enrich(session: Session, runs: list[FirStageRun]) -> None:
             mark_skipped(session, run, f"LLM output invalid after repair: {exc}")
             continue
         _apply_enrichment(session, fir, a, result, meta.model_id)
+        a.review_reasons = [r for r in (a.review_reasons or []) if "LLM" not in r]   # second opinion now given
+        a.needs_review = bool(a.review_reasons)
         mark_succeeded(session, run, provider=DecidedBy.LLM, model_id=meta.model_id, device=meta.device)
+        embed = session.scalar(select(FirStageRun).where(FirStageRun.fir_id == fir.id,
+                                                         FirStageRun.stage == Stage.EMBED))
+        if embed is not None and embed.status in (RunStatus.SUCCEEDED, RunStatus.FAILED, RunStatus.SKIPPED):
+            _finalize_fir(session, fir.id)                   # re-run of enrich after the FIR was complete
 
 
 def _generate_validated(session: Session, system: str, prompt: str, schema: dict, tax):
@@ -201,21 +208,44 @@ def _apply_enrichment(session: Session, fir: Fir, a: FirAnalysis, r: decisions.L
     known = {(x.get("name"), x.get("alias")) for x in (a.accused or [])}
     accused = list(a.accused or [])
     for person in r.accused:
-        name = normalize_person(person.name) if person.name else None
-        alias = normalize_person(person.alias) if person.alias else None
+        name, alias, name_claimed = _grounded_person(fir.raw_text, person)
+        if person.claimed_identity:
+            alias = None                                 # a fraudster's claimed persona is never an identity
         if (name, alias) in known or not (name or alias):
             continue
-        source = "claimed" if person.claimed_identity else "llm"
+        claimed = name_claimed and not alias
+        source = "claimed" if claimed else "llm"
         accused.append({"as_written": person.name or person.alias, "name": name, "alias": alias, "source": source})
-        etype = "claimed_identity" if person.claimed_identity else "accused_name"
         if name:
-            session.add(Entity(fir_id=fir.id, type=etype, raw=person.name, value=name, role="offender",
-                               source="llm"))
-        if alias and not person.claimed_identity:
+            session.add(Entity(fir_id=fir.id, type="claimed_identity" if name_claimed else "accused_name",
+                               raw=person.name, value=name, role="offender", source="llm"))
+        if alias:
             session.add(Entity(fir_id=fir.id, type="accused_alias", raw=person.alias, value=alias,
                                role="offender", source="llm"))
     a.accused = accused
     _set_model_version(a, "generator", model_id)
+
+
+GENERIC_PERSON_WORDS = re.compile(r"\b(unknown|unidentified|not known|caller|person|persons|employee|agent|officer|"
+                                  r"executive|staff|representative|man|woman|boy|girl|youths?|accused)\b", re.I)
+
+
+def _grounded_person(raw_text: str, person: decisions.LlmAccused) -> tuple[str | None, str | None, bool]:
+    """Returns (name, alias, name_is_claimed)."""
+    """Accept only names the FIR actually contains. A single first name is never identifying evidence (kept only
+    as a claimed identity); an alias counts only when the text says 'alias X' / 'urf X'."""
+    text = raw_text.lower()
+    claimed = person.claimed_identity
+    name = normalize_person(person.name) if person.name else None
+    alias = normalize_person(person.alias) if person.alias else None
+    if name and (GENERIC_PERSON_WORDS.fullmatch(name) or GENERIC_PERSON_WORDS.search(name) and " " not in name
+                 or name not in re.sub(r"[.\s]+", " ", text)):
+        name = None
+    if name and " " not in name:
+        claimed = True                                   # first name alone: weak signature, never a link
+    if alias and not re.search(rf"\b(?:alias|urf|@)\s+{re.escape(alias)}\b", text):
+        alias = None
+    return name, alias, claimed
 
 
 # ----------------------------------------------------------------------------- embed (Granite Embedding)

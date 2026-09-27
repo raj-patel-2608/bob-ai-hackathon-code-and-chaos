@@ -70,6 +70,25 @@ def system_status(session: Session = Depends(get_session)) -> dict:
     }
 
 
+@router.post("/system/reprocess-llm")
+def reprocess_llm(session: Session = Depends(get_session)) -> dict:
+    """Re-queue the LLM stage for low-confidence FIRs whose second opinion was skipped or failed
+    (for example because watsonx was not configured yet). Links and clusters are rebuilt afterwards."""
+    rows = session.execute(select(FirStageRun, Fir.batch_id).join(Fir, Fir.id == FirStageRun.fir_id)
+                           .join(FirAnalysis, FirAnalysis.fir_id == Fir.id)
+                           .where(FirStageRun.stage == "enrich", FirAnalysis.escalated.is_(True),
+                                  FirStageRun.status.in_(("SKIPPED", "FAILED")))).all()
+    batches = set()
+    for run, batch_id in rows:
+        run.status, run.attempts, run.next_attempt_at = "PENDING", 0, utcnow()
+        run.error_code = run.error_message = run.note = None
+        batches.add(batch_id)
+    for batch_id in batches:
+        session.get(IngestBatch, batch_id).status = "PROCESSING"      # worker re-finalises and rebuilds links
+    session.add(AuditLog(action="system.reprocess_llm", detail={"requeued": len(rows)}))
+    return {"requeued": len(rows), "batches": len(batches)}
+
+
 @router.post("/system/reset")
 def reset(session: Session = Depends(get_session)) -> dict:
     """Wipe all data (demo convenience). Disabled when CRIMEFIR_ENV=production."""

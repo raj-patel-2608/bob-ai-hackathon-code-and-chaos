@@ -88,3 +88,21 @@ def test_health(client):
     ready = client.get("/api/health/ready").json()
     assert ready["checks"]["database"]["ok"] is True
     assert client.get("/api/health/live").json() == {"status": "ok"}
+
+
+def test_reprocess_llm_after_credentials_added(client, worker, fake_models):
+    fake_models.generator_available = False
+    _upload(client, [fir("0901", "Gotri", "Vadodara City", 9, "LOWCONF caller said parcel seized, sent money.")])
+    drain(worker)
+    item = client.get("/api/firs").json()["items"][0]
+    assert item["status"] == "NEEDS_REVIEW"
+
+    fake_models.generator_available = True
+    fake_models.generate_payload = {"json": {
+        "crime_minor": "cyber.digital_arrest", "mo_flags": ["threat_of_arrest_or_case"], "accused": [],
+        "victim": {"gender": "unknown", "age_group": "unknown"}, "summary": "Fake officers claimed a parcel was seized."}}
+    assert client.post("/api/system/reprocess-llm").json()["requeued"] == 1
+    drain(worker)
+    item = client.get("/api/firs").json()["items"][0]
+    assert item["status"] == "ANALYZED" and item["decided_by"] == "llm"
+    assert item["crime_minor"] == "cyber.digital_arrest"

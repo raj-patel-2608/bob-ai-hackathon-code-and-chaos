@@ -73,3 +73,15 @@ def test_accused_aliases_and_unknowns():
     assert ("vikram rathore", None, "claimed") in kinds          # fake persona: not an identity
     assert extract_accused("Unknown caller", "") == []
     assert extract_accused("Two unknown persons", "") == []
+
+
+def test_llm_names_must_be_grounded_and_identifying():
+    from app.pipeline.decisions import LlmAccused as P
+    from app.pipeline.stages import _grounded_person
+    text = "A girl who said her name is Kajal made a video call. One of them was Salim alias Pappu. Accused Ramesh K. Patel."
+    assert _grounded_person(text, P(name="Kajal")) == ("kajal", None, True)            # first name only: weak
+    assert _grounded_person(text, P(name="Unknown caller"))[0] is None                 # generic
+    assert _grounded_person(text, P(name="Vikram Singh"))[0] is None                   # not in the FIR
+    assert _grounded_person(text, P(name="Ramesh K. Patel")) == ("ramesh k patel", None, False)
+    assert _grounded_person(text, P(name="Salim", alias="Pappu"))[1] == "pappu"         # stated alias kept
+    assert _grounded_person(text, P(alias="Bhuro"))[1] is None                         # alias not stated
