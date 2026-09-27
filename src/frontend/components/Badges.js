@@ -61,11 +61,19 @@ export function StatusBadge({ status }) {
 }
 
 export function DecidedBy({ by, confidence }) {
-  const label = { laya: "Laya", llm: "Granite LLM", rules: "rules (fallback)", officer: "officer" }[by] || by;
+  const conf = confidence || confidence === 0 ? `${Math.round(confidence * 100)}%` : null;
+  if (by === "llm") {
+    return (
+      <span className="text-[11px] text-paper-500">
+        decided by <span className="text-paper-300">Granite LLM</span> (second opinion{conf ? `; Laya was only ${conf} sure` : ""})
+      </span>
+    );
+  }
+  const label = { laya: "Laya", rules: "rules (fallback)", officer: "officer" }[by] || by;
   return (
     <span className="text-[11px] text-paper-500">
       decided by <span className="text-paper-300">{label}</span>
-      {confidence || confidence === 0 ? ` · ${Math.round(confidence * 100)}% confident` : ""}
+      {conf && by === "laya" ? ` · ${conf} confident` : ""}
     </span>
   );
 }

@@ -164,23 +164,25 @@ def _clusters(session: Session, graph: nx.Graph) -> int:
         name_only = all(graph.nodes[n]["etype"] in NAME_TYPES for n in identities)
 
         score, factors = 0, []
-        pts = min(15 * (len(members) - 1), 45); score += pts
+        pts = min(8 * (len(members) - 1), 32); score += pts
         factors.append(f"{len(members)} FIRs linked by shared evidence (+{pts})")
         if len(stations) > 1:
-            pts = min(10 * (len(stations) - 1), 20); score += pts
+            pts = min(5 * (len(stations) - 1), 15); score += pts
             factors.append(f"spans {len(stations)} police stations (+{pts})")
         if len(districts) > 1:
-            score += 15
-            factors.append(f"crosses {len(districts)} districts (+15)")
+            score += 10
+            factors.append(f"crosses {len(districts)} districts (+10)")
         if loss >= 1_000_000:
             score += 15; factors.append(f"total loss Rs {loss:,} (+15)")
         elif loss >= 100_000:
-            score += 8; factors.append(f"total loss Rs {loss:,} (+8)")
+            score += 7; factors.append(f"total loss Rs {loss:,} (+7)")
         if latest and dates and (latest - max(dates)).days <= 30:
-            score += 10; factors.append("active in the last 30 days (+10)")
+            score += 13; factors.append("active in the last 30 days of data (+13)")
         if seniors:
             pts = min(5 * seniors, 10); score += pts
             factors.append(f"{seniors} senior-citizen victim(s) (+{pts})")
+        if any(graph.nodes[n]["etype"] in ("bank_account", "upi_id") for n in identities):
+            score += 5; factors.append("money trail: shared bank account / UPI ID (+5)")
         if name_only:
             score = int(score * 0.6)
             factors.append("linked only by accused name/alias: verify identity (x0.6)")
@@ -194,7 +196,7 @@ def _clusters(session: Session, graph: nx.Graph) -> int:
 
     scored.sort(key=lambda x: (-x[0], x[1][0]))
     for idx, (score, fir_ids, info) in enumerate(scored, start=1):
-        level = "HIGH" if score >= 60 else "MEDIUM" if score >= 35 else "LOW"
+        level = "HIGH" if score >= 70 else "MEDIUM" if score >= 45 else "LOW"
         cluster = OffenderCluster(id=f"K-{idx:03d}", risk_score=score, risk_level=level, n_firs=len(fir_ids),
                                   n_stations=info["stations"], n_districts=info["districts"],
                                   first_seen=min(info["dates"]) if info["dates"] else None,

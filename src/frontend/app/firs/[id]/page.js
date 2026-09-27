@@ -113,7 +113,7 @@ export default function FirDetailPage() {
               <span className="text-paper-100 font-medium">{d.minor_head || "Unclassified"}</span>
             </div>
             <div className="mt-2"><DecidedBy by={d.decided_by} confidence={d.confidence} />
-              {d.escalated_to_llm ? <span className="text-[11px] text-signal-amber ml-2">below 40% confidence → sent to Granite LLM</span> : null}</div>
+              {d.escalated_to_llm && d.decided_by !== "llm" ? <span className="text-[11px] text-signal-amber ml-2">below 40% confidence: waiting for Granite LLM second opinion</span> : null}</div>
             {d.alternatives?.length ? (
               <div className="text-[11px] text-paper-500 mt-2">
                 Alternatives: {d.alternatives.map((a) => `${a.minor_head} ${pct(a.probability)}`).join(" · ")}
@@ -123,7 +123,7 @@ export default function FirDetailPage() {
               <div>
                 <div className="text-paper-500 mb-1">Method (MO)</div>
                 {d.methods?.length ? d.methods.map((m) => (
-                  <div key={m.flag} className="text-paper-300">· {m.label} <span className="text-paper-500">{pct(m.probability)}</span></div>
+                  <div key={m.flag} className="text-paper-300">· {m.label} <span className="text-paper-500">{d.decided_by === "llm" ? "(Granite)" : pct(m.probability)}</span></div>
                 )) : <div className="text-paper-500">none detected</div>}
               </div>
               <div>

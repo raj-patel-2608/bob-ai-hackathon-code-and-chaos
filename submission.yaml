@@ -9,51 +9,61 @@
 # =============================================================================
 
 team:
-  name: ""                             # REQUIRED — e.g., "Orion Squad"
-  track: ""                            # REQUIRED — one of: AI | DevOps | Sustainability | Open
+  name: "Code & Chaos"                 # REQUIRED
+  track: "AI"                          # REQUIRED — one of: AI | DevOps | Sustainability | Open
   lead:
-    name: ""                           # REQUIRED — e.g., "Alice Chen"
-    email: ""                          # REQUIRED — e.g., "alice.chen@ibm.com"
+    name: ""                           # REQUIRED — TODO: team lead name
+    email: ""                          # REQUIRED — TODO: team lead email
   members:
-    - name: ""                         # REQUIRED — Team member 1
+    - name: ""                         # REQUIRED — TODO: team member 1
       email: ""
-    - name: ""                         # Add more members by copying the two lines above
+    - name: ""
       email: ""
     - name: ""
       email: ""
 
 submission:
-  title: ""                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"
+  title: "CrimeFIR: FIR Intelligence & Crime Pattern Detector"   # REQUIRED
 
-  problem_statement: >                 # REQUIRED — 1-3 sentences. What problem? Who has it?
-    Replace this text with a concise description of the real-world problem
-    your project addresses and who experiences it.
+  problem_statement: >                 # REQUIRED
+    Police FIRs are free text (UP's CCTNS alone holds 3+ crore with no NLP layer), and serial offenders such as
+    Jamtara-style call centres reuse the same phones and mule accounts across districts. Each victim files at a
+    different station and each FIR is written differently, so investigators and Station House Officers never see
+    the inter-district links, the crime mix or the repeat offenders (IBM x NFSU PS10).
 
-  solution_summary: >                  # REQUIRED — 1-3 sentences. What did you build?
-    Replace this text with a clear description of your solution
-    and how it addresses the problem above.
+  solution_summary: >                  # REQUIRED
+    CrimeFIR auto-drafts the NCRB crime classification (Major/Minor Head, method, victim, accused) from raw FIR text
+    using rules for hard evidence, the local Laya decision model, and IBM Granite on watsonx.ai as a grounded second
+    opinion when Laya is under 40% confident. It links FIRs through shared evidence, flags repeat-offender clusters
+    with NetworkX and a transparent risk score, and writes number-verified station crime briefs. Investigators query
+    everything in plain English through IBM Bob via our MCP server.
 
   key_features:                        # REQUIRED — List 3 to 5 specific features you implemented
-    - ""                               # e.g., "Real-time pipeline anomaly detection using watsonx.ai"
-    - ""
-    - ""
-    - ""                               # optional 4th
-    - ""                               # optional 5th
+    - "Auto-drafted NCRB I.I.F.-II per FIR: crime major/minor head (93% / 83% on unseen FIRs), 24 MO flags, victim, accused"
+    - "Evidence-based repeat-offender clusters across stations and districts (NetworkX): 100% precision, 0 decoys"
+    - "System-1/System-2 decisions: Laya locally on GPU/CPU + IBM Granite (watsonx.ai) for low-confidence FIRs, grounded JSON"
+    - "Station-level crime trend brief written by IBM Granite with every number verified against the data"
+    - "IBM Bob 'FIR Analyst': MCP server with 12 tools, custom mode with policing rules, headless weekly briefs (bob run)"
 
   tech_stack:
-    languages: []                      # REQUIRED — e.g., ["Python", "TypeScript"]
-    frameworks: []                     # e.g., ["FastAPI", "React"]
-    ibm_technologies: []               # e.g., ["watsonx.ai", "IBM Bob", "IBM Cloud Functions"]
-    databases: []                      # e.g., ["PostgreSQL", "Redis"]
-    other: []                          # e.g., ["Docker", "GitHub Actions", "Slack API"]
+    languages: ["Python", "JavaScript"]                  # REQUIRED
+    frameworks: ["FastAPI", "SQLAlchemy", "Next.js", "React", "NetworkX", "PyTorch", "sentence-transformers", "MCP Python SDK"]
+    ibm_technologies: ["IBM Bob", "IBM Bob Shell", "watsonx.ai", "IBM Granite 4 (granite-4-h-small)", "IBM Granite Embedding"]
+    databases: ["SQLite"]
+    other: ["Laya decision model (Convai Innovations, Apache 2.0)", "Tailwind CSS", "d3-force", "pytest"]
 
-  what_we_are_most_proud_of: >         # Optional but recommended — guides judges to your best work
-    Replace with what aspect of the submission you consider strongest
-    and want judges to pay special attention to.
+  what_we_are_most_proud_of: >
+    Evidence first and honestly measured: 100% cluster precision with zero decoys and 100% evidence extraction
+    across messy formats, shown on an answer-key evaluation page. Laya's calibrated confidence sends only about 12%
+    of FIRs to IBM Granite (40/40 correct), and all LLM output is grounded: names must appear in the FIR, claimed
+    fraud personas never count as identities, and brief numbers are verified.
 
-  known_limitations: >                 # Optional but recommended — be honest about gaps
-    Replace with any known limitations, incomplete features,
-    or shortcuts taken due to time constraints.
+  known_limitations: >
+    Results are measured on 400 synthetic FIRs grounded in real reported crime patterns (no public FIR text dataset
+    exists). Names without a surname cannot be proven to be the same person, so one planted gang is only partly
+    recovered (11/12). MO flags are the weakest output (F1 0.64). Pattern-only links are weak and labelled as such.
+    There is no authentication or role-based access. Low-confidence FIRs are sent to watsonx.ai (cloud) when
+    credentials are configured.
 
 # =============================================================================
 # ARTIFACT LOCATIONS

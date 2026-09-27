@@ -1,49 +1,103 @@
 # Architecture
 
 ## System Architecture
-
-[Describe the overall architecture of your system. Replace the Mermaid diagram below with your actual architecture.]
+Four processes plus a database. Only the **model service** loads AI models; everything else stays light.
 
 ```mermaid
-graph TD
-    A[User / Browser] -->|HTTP| B[Frontend - React]
-    B -->|REST API| C[Backend - FastAPI]
-    C -->|SDK| D[watsonx.ai]
-    C -->|Query| E[PostgreSQL]
-    C -->|Publish| F[Slack Webhook]
-    D -->|Inference Result| C
+graph LR
+    U[Investigator / SHO] -->|browser| FE[Next.js frontend :3000]
+    U -->|plain-English questions| BOB[IBM Bob IDE / Bob Shell<br/>'FIR Analyst' mode]
+    BOB -->|MCP stdio| MCP[CrimeFIR MCP server<br/>12 tools]
+    FE -->|REST| API[core-api FastAPI :8000<br/>ingest · rules · job queue · linking<br/>NetworkX clusters · station briefs · evaluation]
+    MCP -->|REST| API
+    API <-->|SQLAlchemy| DB[(SQLite WAL<br/>var/crimefir.db)]
+    API -->|HTTP /v1 decide · embed · generate<br/>circuit breaker, rules fallback| MS[model-service FastAPI :8100]
+    MS --> LAYA[Laya typed-decisions<br/>local GPU, CPU fallback]
+    MS --> EMB[IBM Granite Embedding 30M<br/>local GPU, CPU fallback]
+    MS -->|REST + IAM token| WX[IBM watsonx.ai<br/>granite-4-h-small]
 ```
 
 ## Components
-
 | Component | Technology | Responsibility |
 |---|---|---|
-| Frontend | [e.g., React 18] | [e.g., Dashboard UI, user interaction] |
-| Backend API | [e.g., FastAPI] | [e.g., Business logic, orchestration] |
-| AI / ML | [e.g., watsonx.ai] | [e.g., Anomaly scoring, classification] |
-| Database | [e.g., PostgreSQL] | [e.g., Storing pipeline events and scores] |
-| Notifications | [e.g., Slack API] | [e.g., Alerting on threshold breaches] |
+| Frontend (`src/frontend`) | Next.js 16, React 19, Tailwind, d3-force | Dashboard, ingest with live progress, case files + officer review, repeat-offender clusters + graph, station briefs, model quality |
+| Core API (`src/core_api`) | Python 3.12, FastAPI, SQLAlchemy 2, NetworkX, rapidfuzz, numpy | Ingestion, rule-based evidence extraction, DB-backed job queue + worker, entity resolution, evidence/pattern links, clusters + risk, station facts/briefs, evaluation, REST API |
+| Model service (`src/model_service`) | FastAPI, PyTorch (CUDA), `laya`, sentence-transformers, httpx | Loads models once. Provider adapters chosen in `models.yaml`. GPU-first with automatic CPU fallback. Serialised GPU access (HTTP 429 when busy). |
+| Decision model | **Laya** `convaiinnovations/laya` typed-decisions (Apache 2.0) | Crime minor head (major derived), 24 MO flags, victim gender, with calibrated confidence |
+| Embedding model | **IBM Granite Embedding** `ibm-granite/granite-embedding-30m-english` | 384-d vectors of the FIR story, used for pattern links |
+| LLM | **IBM Granite** `ibm/granite-4-h-small` on **watsonx.ai** (eu-de) | Second opinion when Laya < 40% confident; factual summary; station brief prose |
+| MCP server (`src/mcp_server`) | MCP Python SDK 2.x | Exposes the core API to IBM Bob as tools |
+| IBM Bob config (`.bob/`) | `mcp.json`, `custom_modes.yaml`, `rules-fir-analyst/` | "FIR Analyst" mode: cite FIR ids, leads not guilt, privacy |
+| Database | SQLite in WAL mode | Input, processing state, output, usage, audit |
+| Dataset (`src/dataset`) | Python generator + validator | 400 synthetic FIRs in NCRB I.I.F.-I layout, answer key, real-case sources |
 
-## Data Flow
+## End-to-end data flow
+```mermaid
+flowchart LR
+    A[Upload file / paste / Bob ingest_firs] --> B[Split, dedupe by text hash,<br/>store raw FIR + file unchanged]
+    B --> C[1 extract - rules<br/>header, phones, accounts, UPI,<br/>IMEI, vehicles, handles, roles,<br/>amounts, accused + aliases]
+    C --> D[2 decide - Laya<br/>crime minor/major, MO flags,<br/>victim gender, confidence]
+    D -->|confidence >= 0.40| F
+    D -->|confidence < 0.40| E[3 enrich - Granite LLM<br/>strict JSON, validate, repair once,<br/>ground names in the text]
+    E --> F[4 embed - Granite Embedding<br/>narrative vector]
+    F --> G[Batch done: evidence links,<br/>pattern links, NetworkX clusters,<br/>risk score]
+    G --> H[Dashboard, case files, clusters,<br/>graph, station facts]
+    H --> I[Station brief - Granite<br/>every number verified,<br/>template fallback]
+    H --> J[Officer review queue]
+    H --> K[IBM Bob via MCP]
+```
 
-[Describe how data moves through your system from input to output.]
+1. **Ingest.** `POST /api/batches` validates the file (type, size ≤ 10 MB, ≤ 1000 FIRs), stores it unchanged under
+   `var/uploads/<batch>/`, splits it, de-duplicates by SHA-256 of the text, parses the I.I.F.-I header, and creates
+   one stage run per FIR per stage. It returns **202** with a status URL immediately.
+2. **Background worker.** It claims micro-batches (extract 50, decide 16, enrich 1, embed 32) with **leases**. It
+   retries transient errors with exponential backoff (up to 4 attempts), puts crashed work back in the queue on
+   restart, and records the provider, model id, device and duration of every stage.
+3. **extract (rules).** Hard identifiers with character spans and roles, the loss amount, the accused from the
+   header and "alias" / "identified as" phrases, and claimed personas kept separately.
+4. **decide (Laya).** 27 typed questions in one pass. Per-MO-flag thresholds come from
+   `src/shared/calibration.json`, tuned on the dev split.
+5. **enrich (Granite, only below 0.40).** Checks the monthly token budget first, then calls, validates, repairs
+   once and grounds the result. If watsonx is unavailable, the FIR goes to the review queue.
+6. **embed (Granite Embedding).** A unit vector of the narrative, stored as float32.
+7. **Batch end.** Links and clusters are recomputed consistently, and the batch becomes COMPLETED or
+   COMPLETED_WITH_ERRORS.
 
-1. [e.g., Pipeline logs are ingested via a webhook from GitHub Actions]
-2. [e.g., Logs are preprocessed and chunked into 512-token segments]
-3. [e.g., Each chunk is sent to the watsonx.ai inference endpoint]
-4. [e.g., Anomaly scores are stored in PostgreSQL]
-5. [e.g., The React dashboard polls the API every 30 seconds to refresh]
+## Data model (SQLite)
+| Kind | Tables |
+|---|---|
+| Input (immutable) | `ingest_batches`, `firs` (raw text never changes), original files in `var/uploads/` |
+| Processing state | `fir_stage_runs`: WAITING → PENDING → RUNNING → SUCCEEDED / SKIPPED / FAILED, with attempts, lease, provider, model, device, error |
+| Analysis | `fir_analysis` (auto-drafted I.I.F.-II), `entities` (value, raw, role, span, source), `embeddings` |
+| Output | `links` (EVIDENCE / PATTERN + evidence JSON), `offender_clusters`, `cluster_members`, `station_reports`, `eval_runs` |
+| Operations | `llm_usage` (token budget), `audit_log` (ingest, reviews, resets) |
 
-## Security Considerations
+## Reliability
+- **Degradation ladder.** GPU → CPU per model (on load failure or runtime out-of-memory). If the model service is
+  down, a circuit breaker (opens after 5 failures, stays open 30 s) switches decisions to keyword rules and marks
+  those FIRs for review. If watsonx is down or over budget, the FIR goes to the review queue and briefs use the
+  template.
+- **Health.** `GET /api/health/ready` reports the database, worker heartbeat and model service
+  (models, devices, GPU memory).
+- **Idempotency.** Duplicate uploads are skipped, stages upsert their outputs, and
+  `POST /api/system/reprocess-llm` re-runs only the missed LLM second opinions.
 
-[Note any security decisions relevant to the architecture — even if basic.]
+## Security and privacy
+- Local by default. FIR text leaves the machine only for the ~12% of low-confidence FIRs sent to watsonx.ai
+  (IBM Cloud, eu-de). Removing the credentials keeps everything local.
+- Secrets live in `src/.env` (git-ignored). `src/.env.example` documents every variable.
+- Complainant phone numbers are masked in API responses and never used as offender evidence.
+- LLM output is schema-validated and grounded in the source text. LLM-written briefs are rejected if they contain
+  any number that isn't in the computed facts.
+- Every link and cluster is labelled "investigation lead, requires human verification". Officer confirmations
+  and corrections are audited.
+- `POST /api/system/reset` is disabled when `CRIMEFIR_ENV=production`. Authentication and role-based access are
+  out of scope for the prototype (see Known Limitations).
 
-- [e.g., API keys stored in environment variables, never committed to git]
-- [e.g., All API routes require a Bearer token]
-- [e.g., Database credentials rotated via IBM Secrets Manager]
-
-## Scalability Notes
-
-[Optional: how would this scale beyond the hackathon prototype?]
-
-[e.g., "The FastAPI backend is stateless and could be horizontally scaled behind a load balancer. The watsonx.ai calls are the bottleneck and would benefit from request batching."]
+## Scalability
+- The core API has no ML dependencies and scales horizontally. The same worker loop runs as separate processes
+  once `DATABASE_URL` points at PostgreSQL.
+- Linking uses identifier indices (exact matches), not all-pairs AI comparison. Pattern links compare vectors
+  only within the same crime type. For crore-scale data: PostgreSQL + pgvector (approximate top-k search), several
+  model-service replicas behind a queue, and Laya batched on a GPU server.
+- LLM usage is bounded by design (only low-confidence FIRs, one FIR per call, monthly token budget).
