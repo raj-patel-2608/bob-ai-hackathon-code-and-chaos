@@ -24,7 +24,7 @@ client (`src/mcp_server/smoke_test.py`), but IBM Bob itself has not been run wit
 | Component | Technology | Responsibility |
 |---|---|---|
 | Frontend (`src/frontend`) | Next.js 16, React 19, Tailwind, react-force-graph-2d, IBM Plex Sans + Roboto Mono (bundled, offline) | Dashboard, add/delete batches with live progress, sortable case files + officer review, repeat-offender groups with network and timeline graph views, station briefs, AI accuracy and usage |
-| Core API (`src/core_api`) | Python 3.12, FastAPI, SQLAlchemy 2, NetworkX, rapidfuzz, numpy | Ingestion, rule-based evidence extraction, DB-backed job queue + worker, entity resolution, evidence/pattern links, clusters + risk, station facts/briefs, evaluation, REST API |
+| Core API (`src/core_api`) | Python 3.12, FastAPI, SQLAlchemy 2, NetworkX, numpy | Ingestion, rule-based evidence extraction, DB-backed job queue + worker, entity resolution, evidence/pattern links, clusters + risk, station facts/briefs, evaluation, REST API |
 | Model service (`src/model_service`) | FastAPI, PyTorch (CUDA), `laya`, sentence-transformers, httpx | Loads models once. Provider adapters chosen in `models.yaml`. GPU-first with automatic CPU fallback. Serialised GPU access (HTTP 429 when busy). |
 | Decision model | **Laya** `convaiinnovations/laya` typed-decisions (Apache 2.0) | Crime minor head (major derived), 24 MO flags, victim gender, with calibrated confidence |
 | Embedding model | **IBM Granite Embedding** `ibm-granite/granite-embedding-30m-english` | 384-d vectors of the FIR story, used for pattern links |

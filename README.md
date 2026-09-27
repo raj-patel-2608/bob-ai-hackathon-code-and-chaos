@@ -67,7 +67,7 @@ MCP client; a live Bob session is still to be done). [More in docs/solution-over
 | **Frameworks** | FastAPI, SQLAlchemy 2, Next.js 16 / React 19, Tailwind, react-force-graph (canvas graph), NetworkX, PyTorch, sentence-transformers, MCP Python SDK |
 | **IBM Technologies** | IBM watsonx.ai + IBM Granite 4 (`granite-4-h-small`), IBM Granite Embedding (`granite-embedding-30m-english`), IBM Bob connection (MCP server + `.bob/` custom mode) |
 | **Databases** | SQLite (WAL; PostgreSQL-ready through SQLAlchemy) |
-| **Other** | Laya decision model (Convai Innovations, Apache 2.0), rapidfuzz, numpy, pytest |
+| **Other** | Laya decision model (Convai Innovations, Apache 2.0), numpy, pytest |
 
 ---
 
