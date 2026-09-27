@@ -98,17 +98,16 @@ through our MCP server. [More in docs/solution-overview.md](docs/solution-overvi
 git clone https://github.com/gith-karan/bob-ai-hackathon-code-and-chaos.git
 cd bob-ai-hackathon-code-and-chaos
 
-# 2. Install dependencies (Windows; Linux/macOS: bash scripts/setup.sh)
-powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+# 2. Interactive setup: checks Python/Node/GPU, installs what is missing (asks Y/n first),
+#    downloads the AI models, asks for the optional watsonx.ai credentials and tests them
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1          # Linux/macOS: bash scripts/setup.sh
 
-# 3. Configure environment (optional, enables the Granite LLM tier)
-#    edit src\.env  ->  WATSONX_API_KEY, WATSONX_PROJECT_ID, WATSONX_URL
-
-# 4. Run the project (Linux/macOS: bash scripts/start_all.sh), then load the 400 mock FIRs
-powershell -ExecutionPolicy Bypass -File scripts\start_all.ps1
-powershell -ExecutionPolicy Bypass -File scripts\load_dataset.ps1
-# open http://localhost:3000
+# 3. Start everything with one command (waits until live, offers to load the 400 sample FIRs, opens the browser)
+powershell -ExecutionPolicy Bypass -File scripts\start_all.ps1      # Linux/macOS: bash scripts/start_all.sh
+# open http://localhost:3000   ·   stop: scripts\stop_all.ps1 (Linux/macOS: bash scripts/stop_all.sh)
 ```
+Unattended install: add `-Yes` (PowerShell) or `--yes` (bash). Setup can be re-run at any time; it only fixes what is
+missing.
 
 ---
 

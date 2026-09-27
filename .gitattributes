@@ -5,3 +5,5 @@
 *.pptx binary
 *.bat text eol=crlf
 *.csv -text
+*.sh text eol=lf
+*.ps1 text eol=crlf

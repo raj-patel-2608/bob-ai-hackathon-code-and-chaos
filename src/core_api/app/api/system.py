@@ -100,8 +100,10 @@ def reset(session: Session = Depends(get_session)) -> dict:
     s = get_settings()
     if s.env == "production":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "reset is disabled in production")
+    # llm_usage is kept on purpose: it records watsonx tokens already spent this month, and the monthly budget
+    # guard must keep counting them after the FIRs are deleted
     for model in (ClusterMember, OffenderCluster, Link, Embedding, Entity, FirStageRun, FirAnalysis,
-                  StationReport, Fir, IngestBatch, Station, LlmUsage):
+                  StationReport, Fir, IngestBatch, Station):
         session.execute(delete(model))
     session.add(AuditLog(action="system.reset"))
     if s.upload_dir.exists():

@@ -39,38 +39,41 @@ available, else CPU).
 git clone https://github.com/gith-karan/bob-ai-hackathon-code-and-chaos.git
 cd bob-ai-hackathon-code-and-chaos
 ```
-**Windows (PowerShell):**
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
-```
-**Linux / macOS:**
-```bash
-bash scripts/setup.sh
-```
-Both scripts create `src/core_api/.venv`, `src/model_service/.venv` and `src/mcp_server/.venv`, install each
-service's `requirements.txt`, run `npm install` in `src/frontend`, and create `src/.env` from the example.
+**Windows (PowerShell):** `powershell -ExecutionPolicy Bypass -File scripts\setup.ps1`
+**Linux / macOS:** `bash scripts/setup.sh`
 
-Manual equivalent for one service (Windows paths shown; on Linux use `.venv/bin/python`):
-```bash
-cd src/core_api && python -m venv .venv && .venv\Scripts\python -m pip install -r requirements.txt
-```
+The setup is interactive and safe to re-run. It checks first and asks **Y/n** before installing anything:
+
+| Step | Checks | If missing, it offers to |
+|---|---|---|
+| 1 Prerequisites | Python 3.11+, Node.js 20.9+, NVIDIA GPU, free disk space | install Python / Node.js with winget (Windows) or tells you how |
+| 2 Python packages | each service's `.venv` and every pinned package in `requirements.txt` (`scripts/doctor.py reqs`) | create the venv and `pip install`; without an NVIDIA GPU it offers the smaller CPU-only PyTorch |
+| 3 Frontend | `node_modules` matches `package-lock.json` (`npm ls`) | `npm ci`; creates `src/frontend/.env.local` |
+| 4 AI models | Laya (`convaiinnovations/laya`, typed-decisions, ~1.7 GB) and IBM Granite Embedding (~65 MB) in the Hugging Face cache | download them now (otherwise on first start) |
+| 5 Configuration | `src/.env` exists; watsonx.ai key, project ID and region are set and valid (IAM token + model list; optional 1-token test request) | create `src/.env`, ask for the credentials (key input hidden), re-test |
+| 6 Tests | optional core API test run | |
+| 7 Summary | status of every item | start CrimeFIR |
+
+Add `-Yes` / `--yes` to answer yes to everything (credentials still have to be typed, so they are skipped in that mode).
+The same checks can be run on their own, e.g. `src\model_service\.venv\Scripts\python scripts\doctor.py models`
+(`gpu`, `models [--download]`, `watsonx [--ping]`, `reqs <requirements.txt>`).
 
 ## Running the Project
-**Windows:** each service opens in its own window.
+**One command** starts the three services, waits until each is live, prints which models run where, offers to load
+the 400 sample FIRs if the database is empty, and opens the browser:
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\start_all.ps1
+powershell -ExecutionPolicy Bypass -File scripts\start_all.ps1     # Windows: each service in its own window
+bash scripts/start_all.sh                                          # Linux/macOS: background, logs in var/logs/
 ```
-**Linux / macOS:**
-```bash
-bash scripts/start_all.sh
-```
+Stop: `scripts\stop_all.ps1` (Windows) or `bash scripts/stop_all.sh`. Data stays in `var/crimefir.db`.
+
 Or start the three services manually, in this order, each in its own terminal:
 ```bash
 cd src/model_service && .venv/Scripts/python -m uvicorn app.main:app --host 127.0.0.1 --port 8100
 cd src/core_api      && .venv/Scripts/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 cd src/frontend      && npm run dev
 ```
-The first start of the model service downloads the models (a few minutes). Later starts take about 20 seconds.
+The first start of the model service downloads the models if setup did not (a few minutes). Later starts take about 20 seconds.
 
 **Load the data** (400 FIRs; about 6 minutes on a 4 GB laptop GPU, longer on CPU):
 ```powershell
@@ -109,7 +112,7 @@ its FIRs, analysis, evidence and links are removed and the groups recalculated).
 
 **Automated tests** (no GPU or network needed; they use fake models and a temporary database):
 ```bash
-cd src/core_api      && .venv/Scripts/python -m pytest          # 29 tests incl. a full 400-FIR regression run
+cd src/core_api      && .venv/Scripts/python -m pytest          # 30 tests incl. a full 400-FIR regression run
 cd src/model_service && .venv/Scripts/python -m pytest tests    # 7 tests (GPU/CPU fallback, watsonx adapter)
 cd src/mcp_server    && .venv/Scripts/python -m pytest          # 3 tests
 python src/dataset/generator/validate.py                        # dataset / answer-key consistency

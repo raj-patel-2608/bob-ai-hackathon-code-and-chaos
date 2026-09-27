@@ -145,3 +145,13 @@ def test_cancel_keeps_finished_firs_and_discards_the_rest(client, worker):
     assert client.get("/api/firs").json()["total"] == 0
     assert client.post(f"/api/batches/{batch['batch_id']}/cancel").status_code == 409
     assert client.delete(f"/api/batches/{batch['batch_id']}").status_code == 200
+
+
+def test_reset_keeps_llm_usage_so_the_monthly_budget_still_counts(client):
+    from app.db.engine import session_scope
+    from app.db.models import LlmUsage
+    from app.services.llm_usage import current_month
+    with session_scope() as s:
+        s.add(LlmUsage(month=current_month(), purpose="enrich", model_id="m", input_tokens=900, output_tokens=100))
+    assert client.post("/api/system/reset").status_code == 200
+    assert client.get("/api/system/status").json()["llm_tokens_this_month"] == 1000
