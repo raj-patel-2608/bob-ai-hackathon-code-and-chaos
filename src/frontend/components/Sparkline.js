@@ -29,13 +29,13 @@ export default function Sparkline({ data }) {
         y1={height - padding}
         x2={width - padding}
         y2={height - padding}
-        stroke="#2C373E"
+        style={{ stroke: "rgb(var(--border-strong))" }}
         strokeWidth="1"
       />
-      <path d={areaPath} fill="#4C7EA8" fillOpacity="0.12" stroke="none" />
-      <path d={linePath} fill="none" stroke="#4C7EA8" strokeWidth="2" />
+      <path d={areaPath} style={{ fill: "rgb(var(--accent) / 0.12)" }} stroke="none" />
+      <path d={linePath} fill="none" style={{ stroke: "rgb(var(--accent))" }} strokeWidth="2" />
       {points.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="2.5" fill="#D9A441" />
+        <circle key={i} cx={x} cy={y} r="2.5" style={{ fill: "rgb(var(--khaki))" }} />
       ))}
       {entries.map(([label], i) => (
         <text
@@ -43,7 +43,7 @@ export default function Sparkline({ data }) {
           x={points[i][0]}
           y={height - 6}
           fontSize="9"
-          fill="#8B979E"
+          style={{ fill: "rgb(var(--fg-subtle))" }}
           textAnchor="middle"
         >
           {label}

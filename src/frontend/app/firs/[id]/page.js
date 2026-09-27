@@ -57,16 +57,16 @@ function ReviewBox({ fir, onDone }) {
   };
   return (
     <div className="case-panel stripe-amber p-5 space-y-3">
-      <div className="text-sm text-paper-100 font-medium">Officer check needed</div>
+      <div className="section-title">Officer check needed</div>
       <div className="text-xs text-paper-500">{(fir.iif2_draft?.review_reasons || []).join(" · ") || "Confirm or correct the automatic classification."}</div>
       <input value={minor} onChange={(e) => setMinor(e.target.value)} placeholder="crime minor id, e.g. cyber.digital_arrest"
-        className="w-full bg-ink-950 border border-ink-600 px-3 py-2 text-xs data-id text-paper-100" list="minor-options" />
+        className="input w-full text-xs data-id" list="minor-options" />
       <datalist id="minor-options">{options.filter(Boolean).map((o) => <option key={o} value={o} />)}</datalist>
       <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="note (optional)"
-        className="w-full bg-ink-950 border border-ink-600 px-3 py-2 text-xs text-paper-100" />
+        className="input w-full text-xs" />
       <div className="flex gap-2">
-        <button disabled={busy} onClick={() => submit("confirm")} className="bg-signal-green text-ink-950 text-xs font-medium px-3 py-1.5 disabled:opacity-40">Confirm</button>
-        <button disabled={busy || !minor} onClick={() => submit("correct")} className="border border-signal-amber text-signal-amber text-xs px-3 py-1.5 disabled:opacity-40">Correct to this type</button>
+        <button disabled={busy} onClick={() => submit("confirm")} className="btn btn-primary btn-sm">Confirm</button>
+        <button disabled={busy || !minor} onClick={() => submit("correct")} className="btn btn-secondary btn-sm">Correct to this type</button>
       </div>
     </div>
   );
@@ -87,7 +87,7 @@ export default function FirDetailPage() {
   useEffect(load, [load]);
 
   if (error) return <div className="p-8"><ErrorBox error={error} /></div>;
-  if (!fir) return <div className="p-8 text-sm text-paper-500">Loading case file…</div>;
+  if (!fir) return <div className="px-8 py-5 text-sm text-paper-500">Loading case file…</div>;
   const d = fir.iif2_draft || {};
   const evidence = fir.entities.filter((e) => e.role !== "complainant" && !["accused_name", "accused_alias", "claimed_identity"].includes(e.type));
 
@@ -99,14 +99,14 @@ export default function FirDetailPage() {
           <div className="flex flex-col items-end gap-2">
             <StatusBadge status={fir.status} />
             {fir.cluster_id ? (
-              <Link href={`/offenders/${fir.cluster_id}`} className="border border-signal-red text-signal-red text-xs px-3 py-1.5">
+              <Link href={`/offenders/${fir.cluster_id}`} className="btn btn-danger-outline btn-sm">
                 Part of repeat-offender group {fir.cluster_id}
               </Link>
             ) : null}
-            <Link href={`/graph?fir=${encodeURIComponent(fir.id)}`} className="border border-signal-blue text-signal-blue text-xs px-3 py-1.5">Show links on graph</Link>
+            <Link href={`/graph?fir=${encodeURIComponent(fir.id)}`} className="btn btn-secondary btn-sm">Show links on graph</Link>
           </div>
         } />
-      <div className="p-8 grid grid-cols-1 xl:grid-cols-5 gap-6">
+      <div className="px-8 py-5 grid grid-cols-1 xl:grid-cols-5 gap-6">
         <div className="xl:col-span-3 space-y-6">
           <div className="case-panel stripe-blue p-5">
             <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-paper-500 mb-3">
@@ -157,7 +157,7 @@ export default function FirDetailPage() {
 
           <div className="case-panel p-5">
             <div className="flex justify-between items-baseline mb-3">
-              <div className="text-sm text-paper-100 font-medium">FIR text (what the complainant said)</div>
+              <div className="section-title">FIR text (what the complainant said)</div>
               <div className="text-[11px] text-paper-500">highlighted = evidence found automatically</div>
             </div>
             <HighlightedNarrative narrative={fir.narrative} offset={fir.narrative_offset} entities={fir.entities} />
@@ -171,7 +171,7 @@ export default function FirDetailPage() {
           </div>
 
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-3">Evidence found in this FIR</div>
+            <div className="section-title mb-3">Evidence found in this FIR</div>
             <div className="flex flex-wrap gap-2">
               {evidence.length ? evidence.map((e, i) => <EntityChip key={i} type={e.type} value={e.value} role={e.role} />)
                 : <span className="text-sm text-paper-500">No hard identifiers in this FIR.</span>}
@@ -179,10 +179,10 @@ export default function FirDetailPage() {
           </div>
 
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-3">How this FIR was processed</div>
+            <div className="section-title mb-3">How this FIR was processed</div>
             <div className="grid grid-cols-4 gap-2 text-[11px]">
               {fir.pipeline.map((p) => (
-                <div key={p.stage} className="border border-ink-700 p-2">
+                <div key={p.stage} className="rounded-lg border border-ink-700 p-2">
                   <div className="text-paper-300">{p.stage}</div>
                   <div className={p.status === "SUCCEEDED" ? "text-signal-green" : p.status === "FAILED" ? "text-signal-red" : "text-paper-500"}>{p.status.toLowerCase()}</div>
                   <div className="text-paper-500 truncate" title={p.model_id || ""}>{p.provider || ""}{p.device ? ` · ${p.device}` : ""}</div>
@@ -196,14 +196,14 @@ export default function FirDetailPage() {
         <div className="xl:col-span-2 space-y-6">
           {fir.needs_review ? <ReviewBox fir={fir} onDone={load} /> : null}
           <div className="case-panel p-5">
-            <div className="text-sm text-paper-100 font-medium mb-1">Connected FIRs</div>
+            <div className="section-title mb-1">Connected FIRs</div>
             <div className="text-xs text-paper-500 mb-4">"Evidence" = same phone, account, UPI ID, vehicle or accused. "Pattern only" = similar story, no shared evidence (weak).</div>
             {related.length === 0 ? <div className="text-sm text-paper-500">No linked FIRs.</div> : (
               <div className="space-y-3">
                 {related.map((r) => (
-                  <div key={`${r.id}-${r.link_kind}`} className="border border-ink-700 p-3">
+                  <div key={`${r.id}-${r.link_kind}`} className="rounded-lg border border-ink-700 p-3">
                     <div className="flex items-center justify-between gap-2">
-                      <Link href={`/firs/${encodeURIComponent(r.id)}`} className="data-id text-sm text-paper-100 hover:text-signal-amber">{r.id}</Link>
+                      <Link href={`/firs/${encodeURIComponent(r.id)}`} className="data-id text-sm text-paper-100 hover:text-accent">{r.id}</Link>
                       <LinkBadge kind={r.link_kind} score={r.score} />
                     </div>
                     <div className="text-xs text-paper-500 mt-1">{r.crime_minor_label} · {r.station} ({r.district}) · {fmtDate(r.registered_at)}</div>

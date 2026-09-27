@@ -87,9 +87,14 @@ Or open http://localhost:3000/upload and choose `src/dataset/firs_main.txt`.
 **Standalone set** (60 unrelated FIRs; expect no new groups):
 `scripts\load_dataset.ps1 -File src\dataset\firs_unrelated.txt`
 
-**Removing data:** on *Add FIRs*, each uploaded batch has a **Delete** button (in-page confirmation; its FIRs, analysis,
-evidence and links are removed and the groups recalculated). *Delete all data…* asks you to type `DELETE`.
-API: `DELETE /api/batches/{id}`, `POST /api/system/reset` (disabled when `CRIMEFIR_ENV=production`).
+**Progress, stop and delete:** *Add FIRs* shows the upload progress (bytes, speed, time left, cancel), then the
+processing progress per step (FIRs done / remaining, FIRs per minute, time left). **Stop processing** keeps the FIRs
+already analysed and discards the rest. Each upload in *Upload history* has a **Delete** button (in-page confirmation;
+its FIRs, analysis, evidence and links are removed and the groups recalculated). *Delete all data* asks you to type
+`DELETE`. API: `POST /api/batches/{id}/cancel`, `DELETE /api/batches/{id}`, `POST /api/system/reset` (disabled when
+`CRIMEFIR_ENV=production`).
+
+**Day / night mode:** the switch in the top-right header; the choice is remembered per browser.
 
 ## Verifying It Works
 1. http://127.0.0.1:8100/v1/health lists `decision`, `embedding` (device `cuda` or `cpu`) and `generator`
@@ -104,7 +109,7 @@ API: `DELETE /api/batches/{id}`, `POST /api/system/reset` (disabled when `CRIMEF
 
 **Automated tests** (no GPU or network needed; they use fake models and a temporary database):
 ```bash
-cd src/core_api      && .venv/Scripts/python -m pytest          # 28 tests incl. a full 400-FIR regression run
+cd src/core_api      && .venv/Scripts/python -m pytest          # 29 tests incl. a full 400-FIR regression run
 cd src/model_service && .venv/Scripts/python -m pytest tests    # 7 tests (GPU/CPU fallback, watsonx adapter)
 cd src/mcp_server    && .venv/Scripts/python -m pytest          # 3 tests
 python src/dataset/generator/validate.py                        # dataset / answer-key consistency

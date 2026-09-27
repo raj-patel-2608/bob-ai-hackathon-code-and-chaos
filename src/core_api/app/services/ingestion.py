@@ -10,11 +10,12 @@ import re
 import uuid
 from dataclasses import dataclass
 
-from sqlalchemy import select
+from sqlalchemy import delete, or_, select
 from sqlalchemy.orm import Session
 
 from ..config import get_settings
-from ..db.models import AuditLog, Fir, IngestBatch, Station
+from ..db.models import (AuditLog, ClusterMember, Embedding, Entity, Fir, FirAnalysis, FirStageRun, IngestBatch,
+                         Link, Station, StationReport)
 from ..domain.enums import BatchStatus, FirStatus
 from ..extraction.fir_parser import parse_fir, split_batch
 from ..pipeline.queue import create_stage_runs
@@ -124,3 +125,20 @@ def ingest_content(session: Session, content: bytes, filename: str, source: str 
     session.add(AuditLog(action="batch.ingested", target=batch.id,
                          detail={"filename": filename, "created": len(created), "duplicates": len(duplicates)}))
     return IngestResult(batch, created, duplicates)
+
+
+def delete_firs(session: Session, fir_ids: list[str]) -> None:
+    """Remove FIRs and everything derived from them; stations left without FIRs go too.
+    The caller rebuilds the repeat-offender groups afterwards."""
+    if fir_ids:
+        for i in range(0, len(fir_ids), 500):                       # stay under SQLite's parameter limit
+            chunk = fir_ids[i:i + 500]
+            session.execute(delete(ClusterMember).where(ClusterMember.fir_id.in_(chunk)))
+            session.execute(delete(Link).where(or_(Link.fir_a.in_(chunk), Link.fir_b.in_(chunk))))
+            for model in (Embedding, Entity, FirStageRun, FirAnalysis):
+                session.execute(delete(model).where(model.fir_id.in_(chunk)))
+            session.execute(delete(Fir).where(Fir.id.in_(chunk)))
+    session.flush()
+    used = select(Fir.station_id).where(Fir.station_id.is_not(None))
+    session.execute(delete(StationReport).where(StationReport.station_id.not_in(used)))
+    session.execute(delete(Station).where(Station.id.not_in(used)))

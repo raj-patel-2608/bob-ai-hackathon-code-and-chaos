@@ -21,13 +21,14 @@ from ..db.engine import session_scope
 from ..db.models import AuditLog, Fir, FirStageRun, IngestBatch, utcnow
 from ..domain.enums import STAGE_ORDER, BatchStatus, FirStatus, RunStatus, Stage
 from ..services import intelligence
+from ..services.ingestion import delete_firs
 from .queue import claim, recover_expired, reset_all_running
 from .stages import HANDLERS
 
 log = logging.getLogger("crimefir.worker")
 
-# how many FIRs a stage takes per micro-batch; the LLM stage goes one at a time
-STAGE_BATCH = {Stage.EXTRACT: 50, Stage.DECIDE: 16, Stage.ENRICH: 1, Stage.EMBED: 32}
+# how many FIRs a stage takes per micro-batch (enrich skips confident FIRs instantly; LLM calls are sequential)
+STAGE_BATCH = {Stage.EXTRACT: 50, Stage.DECIDE: 16, Stage.ENRICH: 8, Stage.EMBED: 32}
 
 
 class Worker:
@@ -80,13 +81,48 @@ class Worker:
         """Process at most one micro-batch per stage, then finalise finished batches. Returns True if work was done."""
         did_work = False
         for stage in STAGE_ORDER:
+            # SQLite has one writer at a time: the claim is its own short transaction, and the handlers commit
+            # before every model call, so uploads never wait behind a slow AI call.
             with session_scope() as session:
-                runs = claim(session, stage, STAGE_BATCH[stage], self.id)
-                if runs:
-                    HANDLERS[stage](session, runs)
-                    did_work = True
+                run_ids = [r.id for r in claim(session, stage, STAGE_BATCH[stage], self.id)]
+            if not run_ids:
+                continue
+            with session_scope() as session:
+                runs = list(session.scalars(select(FirStageRun).where(FirStageRun.id.in_(run_ids))
+                                            .order_by(FirStageRun.id)))
+                HANDLERS[stage](session, runs)
+            did_work = True
+        did_work |= self.finalize_cancelled()
         did_work |= self.finalize_batches()
         return did_work
+
+    def finalize_cancelled(self) -> bool:
+        """A cancelled batch keeps the FIRs that were already fully analysed; the unfinished ones are removed
+        once no stage of the batch is running any more."""
+        with session_scope() as session:
+            batches = session.scalars(select(IngestBatch).where(IngestBatch.status == BatchStatus.CANCELLING)).all()
+            done_any = False
+            for batch in batches:
+                running = session.scalar(
+                    select(func.count()).select_from(FirStageRun).join(Fir, Fir.id == FirStageRun.fir_id)
+                    .where(Fir.batch_id == batch.id, FirStageRun.status == RunStatus.RUNNING))
+                if running:
+                    continue
+                unfinished = list(session.scalars(select(Fir.id).where(
+                    Fir.batch_id == batch.id,
+                    Fir.status.not_in((FirStatus.ANALYZED, FirStatus.NEEDS_REVIEW, FirStatus.FAILED)))))
+                delete_firs(session, unfinished)
+                kept = session.scalar(select(func.count()).select_from(Fir).where(Fir.batch_id == batch.id))
+                batch.created_count = kept
+                batch.status = BatchStatus.CANCELLED
+                batch.link_status = RunStatus.SUCCEEDED
+                batch.finished_at = utcnow()
+                session.add(AuditLog(action="batch.cancelled", target=batch.id,
+                                     detail={"kept_firs": kept, "discarded_firs": len(unfinished)}))
+                done_any = True
+            if done_any:
+                intelligence.rebuild(session)
+        return done_any
 
     def finalize_batches(self) -> bool:
         with session_scope() as session:

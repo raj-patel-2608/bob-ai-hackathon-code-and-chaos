@@ -37,10 +37,10 @@ function GraphInner() {
               <input type="checkbox" checked={includePattern} onChange={(e) => setIncludePattern(e.target.checked)} />
               also show similar-story links <InfoTip text={GLOSSARY.patternLink} align="right" />
             </label>
-            {fir || cluster ? <Link href="/graph" className="border border-signal-blue text-signal-blue text-xs px-3 py-2">Show all</Link> : null}
+            {fir || cluster ? <Link href="/graph" className="btn btn-secondary btn-sm">Show all</Link> : null}
           </div>
         } />
-      <div className="p-8 space-y-3">
+      <div className="px-8 py-5 space-y-3">
         <div className="text-xs text-paper-500">{firs} FIRs · {identities} pieces of shared evidence</div>
         <ErrorBox error={error} />
         {!graph ? <div className="case-panel p-12 text-center text-sm text-paper-500">Building graph…</div>
@@ -52,5 +52,5 @@ function GraphInner() {
 }
 
 export default function GraphPage() {
-  return <Suspense fallback={<div className="p-8 text-sm text-paper-500">Loading…</div>}><GraphInner /></Suspense>;
+  return <Suspense fallback={<div className="px-8 py-5 text-sm text-paper-500">Loading…</div>}><GraphInner /></Suspense>;
 }

@@ -20,7 +20,7 @@ graph LR
 ## Components
 | Component | Technology | Responsibility |
 |---|---|---|
-| Frontend (`src/frontend`) | Next.js 16, React 19, Tailwind, react-force-graph-2d | Dashboard, add/delete batches with live progress, sortable case files + officer review, repeat-offender groups with network and timeline graph views, station briefs, AI accuracy and usage |
+| Frontend (`src/frontend`) | Next.js 16, React 19, Tailwind, react-force-graph-2d, IBM Plex Sans + Roboto Mono (bundled, offline) | Dashboard, add/delete batches with live progress, sortable case files + officer review, repeat-offender groups with network and timeline graph views, station briefs, AI accuracy and usage |
 | Core API (`src/core_api`) | Python 3.12, FastAPI, SQLAlchemy 2, NetworkX, rapidfuzz, numpy | Ingestion, rule-based evidence extraction, DB-backed job queue + worker, entity resolution, evidence/pattern links, clusters + risk, station facts/briefs, evaluation, REST API |
 | Model service (`src/model_service`) | FastAPI, PyTorch (CUDA), `laya`, sentence-transformers, httpx | Loads models once. Provider adapters chosen in `models.yaml`. GPU-first with automatic CPU fallback. Serialised GPU access (HTTP 429 when busy). |
 | Decision model | **Laya** `convaiinnovations/laya` typed-decisions (Apache 2.0) | Crime minor head (major derived), 24 MO flags, victim gender, with calibrated confidence |
@@ -81,6 +81,11 @@ flowchart LR
   (models, devices, GPU memory).
 - **Idempotency.** Duplicate uploads are skipped, stages upsert their outputs, and
   `POST /api/system/reprocess-llm` re-runs only the missed LLM second opinions.
+- **Responsive while busy.** SQLite allows one writer at a time, so the worker claims work in its own short
+  transaction and commits before every model call. Uploads and deletes never wait behind a GPU or watsonx call.
+  A busy database returns a JSON 503 ("try again") instead of a bare 500.
+- **Stop.** `POST /api/batches/{id}/cancel` skips the queued work of a batch; once the running step ends, the
+  worker removes the unfinished FIRs, keeps the analysed ones and recalculates the groups.
 
 ## Security and privacy
 - Local by default. FIR text leaves the machine only for the ~12% of low-confidence FIRs sent to watsonx.ai

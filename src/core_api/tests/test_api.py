@@ -129,3 +129,19 @@ def test_sorting_linked_filter_and_delete_batch(client, worker):
     assert client.get(f"/api/batches/{first['batch_id']}").status_code == 404
     assert client.delete(f"/api/batches/{second['batch_id']}").json()["firs_deleted"] == 1
     assert client.get("/api/stations").json() == []
+
+
+def test_cancel_keeps_finished_firs_and_discards_the_rest(client, worker):
+    batch = _upload(client, [fir("0201", "Navrangpura", "Ahmedabad City", 10, KYC.format(phone="98251 77304")),
+                             fir("0202", "Adajan", "Surat City", 12, KYC.format(phone="+91-9825177304"))]).json()
+    assert client.get(f"/api/batches/{batch['batch_id']}").status_code == 200     # committed before the response
+    assert client.delete(f"/api/batches/{batch['batch_id']}").status_code == 409  # still processing
+
+    r = client.post(f"/api/batches/{batch['batch_id']}/cancel").json()
+    assert r["status"] == "CANCELLING" and r["skipped_stage_runs"] > 0
+    drain(worker)
+    b = client.get(f"/api/batches/{batch['batch_id']}").json()
+    assert b["status"] == "CANCELLED" and b["created"] == 0              # nothing had finished: all discarded
+    assert client.get("/api/firs").json()["total"] == 0
+    assert client.post(f"/api/batches/{batch['batch_id']}/cancel").status_code == 409
+    assert client.delete(f"/api/batches/{batch['batch_id']}").status_code == 200

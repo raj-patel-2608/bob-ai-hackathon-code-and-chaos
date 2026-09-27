@@ -21,7 +21,7 @@ export default function OffendersPage() {
     api.offenders({ station_id: station, min_risk: minRisk }).then(setData).catch((e) => setError(e.message));
   }, [station, minRisk]);
 
-  const input = "bg-ink-950 border border-ink-600 px-3 py-2 text-sm text-paper-100";
+  const input = "input";
   return (
     <div>
       <PageHeader title="Repeat offenders"
@@ -39,18 +39,18 @@ export default function OffendersPage() {
             </select>
           </div>
         } />
-      <div className="p-8 space-y-4">
+      <div className="px-8 py-5 space-y-4">
         <div className="flex items-center gap-2 text-xs text-paper-500">What do HIGH / MEDIUM mean? <InfoTip text={GLOSSARY.highRisk} /></div>
         <ErrorBox error={error} />
         {!data ? <div className="text-sm text-paper-500">Loading…</div> : data.items.length === 0 ? (
           <div className="case-panel p-6 text-sm text-paper-500">No groups match these filters.</div>
         ) : data.items.map((c) => (
           <Link key={c.id} href={`/offenders/${c.id}`}
-            className={`case-panel block p-5 hover:bg-ink-800/60 ${c.risk_level === "HIGH" ? "stripe-red" : c.risk_level === "MEDIUM" ? "stripe-amber" : "stripe-blue"}`}>
+            className={`case-panel block p-5 hover:bg-ink-800/50 ${c.risk_level === "HIGH" ? "stripe-red" : c.risk_level === "MEDIUM" ? "stripe-amber" : "stripe-blue"}`}>
             <div className="flex items-start justify-between gap-6">
               <div>
                 <div className="flex items-center gap-3">
-                  <span className="font-serif text-xl text-paper-100">Group {c.id}</span>
+                  <span className="text-lg font-semibold text-paper-100">Group {c.id}</span>
                   <RiskBadge risk={c.risk_level} score={c.risk_score} />
                 </div>
                 <div className="text-xs text-paper-500 mt-1">
@@ -67,7 +67,7 @@ export default function OffendersPage() {
             </div>
             <div className="text-[11px] text-paper-500 mt-3 mb-1">Why this risk level:</div>
             <div className="flex flex-wrap gap-2">
-              {c.risk_factors.map((f) => <span key={f} className="text-[11px] border border-ink-600 px-2 py-0.5 text-paper-300">{f}</span>)}
+              {c.risk_factors.map((f) => <span key={f} className="pill bg-ink-800 text-paper-300 font-normal">{f}</span>)}
             </div>
           </Link>
         ))}

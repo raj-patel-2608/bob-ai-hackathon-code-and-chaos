@@ -25,6 +25,12 @@ from .queue import mark_failed, mark_skipped, mark_succeeded
 
 log = logging.getLogger("crimefir.pipeline")
 
+
+def _release_db(session: Session) -> None:
+    """End the current transaction before a slow model call, so the single SQLite writer lock is never held
+    while waiting on the GPU or on watsonx (uploads and deletes stay responsive). Objects stay loaded."""
+    session.commit()
+
 AGE_GROUPS = ((17, "below_18"), (30, "18_30"), (45, "31_45"), (60, "46_60"), (200, "above_60"))
 
 
@@ -97,6 +103,7 @@ def run_decide(session: Session, runs: list[FirStageRun]) -> None:
     firs = {r.fir_id: session.get(Fir, r.fir_id) for r in runs}
     items = [{"id": fid, "text": decisions.narrative_for_models(f.narrative), "questions": questions}
              for fid, f in firs.items()]
+    _release_db(session)
     try:
         results, meta = get_model_client().decide(items, checkpoint=decisions.LAYA_CHECKPOINT)
         by_id = {r["id"]: r for r in results}
@@ -155,9 +162,12 @@ def run_enrich(session: Session, runs: list[FirStageRun]) -> None:
                                              fir.accused_header and f"accused: {fir.accused_header}") if x)
         system, prompt, schema = decisions.llm_messages(tax, decisions.narrative_for_models(fir.narrative, 3000),
                                                         header_hint)
+        _release_db(session)
+        usage: list[tuple[dict, str | None, str]] = []
         try:
-            result, meta = _generate_validated(session, system, prompt, schema, tax)
+            result, meta = _generate_validated(system, prompt, schema, tax, usage)
         except ModelUnavailable as exc:
+            _record(session, usage)
             if exc.transient and mark_failed(session, run, error_code="llm_unavailable", message=str(exc),
                                              transient=True):
                 continue                                             # will retry with backoff
@@ -166,9 +176,11 @@ def run_enrich(session: Session, runs: list[FirStageRun]) -> None:
             _add_review(a, "low decision confidence; LLM unavailable for a second opinion")
             continue
         except ValueError as exc:
+            _record(session, usage)
             _add_review(a, "low decision confidence; LLM answer failed validation")
             mark_skipped(session, run, f"LLM output invalid after repair: {exc}")
             continue
+        _record(session, usage)
         _apply_enrichment(session, fir, a, result, meta.model_id)
         a.review_reasons = [r for r in (a.review_reasons or []) if "LLM" not in r]   # second opinion now given
         a.needs_review = bool(a.review_reasons)
@@ -179,17 +191,24 @@ def run_enrich(session: Session, runs: list[FirStageRun]) -> None:
             _finalize_fir(session, fir.id)                   # re-run of enrich after the FIR was complete
 
 
-def _generate_validated(session: Session, system: str, prompt: str, schema: dict, tax):
+def _generate_validated(system: str, prompt: str, schema: dict, tax, usage: list):
+    """Calls the LLM (no database access here); token usage is collected in `usage` and recorded afterwards."""
     client = get_model_client()
     data, meta = client.generate(system=system, prompt=prompt, json_schema=schema)
-    record_usage(session, data, meta.model_id, "enrich")
+    usage.append((data, meta.model_id, "enrich"))
     try:
         return decisions.validate_llm(data.get("json") or data.get("text", ""), tax), meta
     except ValueError as first_error:                                # one repair attempt
         repair = f"{prompt}\n\nYour previous answer was invalid: {first_error}. Return only the corrected JSON."
         data, meta = client.generate(system=system, prompt=repair, json_schema=schema)
-        record_usage(session, data, meta.model_id, "enrich-repair")
+        usage.append((data, meta.model_id, "enrich-repair"))
         return decisions.validate_llm(data.get("json") or data.get("text", ""), tax), meta
+
+
+def _record(session: Session, usage: list) -> None:
+    for data, model_id, purpose in usage:
+        record_usage(session, data, model_id, purpose)
+    usage.clear()
 
 
 def _apply_enrichment(session: Session, fir: Fir, a: FirAnalysis, r: decisions.LlmEnrichment,
@@ -254,6 +273,7 @@ def _grounded_person(raw_text: str, person: decisions.LlmAccused) -> tuple[str |
 def run_embed(session: Session, runs: list[FirStageRun]) -> None:
     firs = {r.fir_id: session.get(Fir, r.fir_id) for r in runs}
     texts = [decisions.narrative_for_models(f.narrative) for f in firs.values()]
+    _release_db(session)
     try:
         vectors, meta = get_model_client().embed(texts)
     except ModelUnavailable as exc:

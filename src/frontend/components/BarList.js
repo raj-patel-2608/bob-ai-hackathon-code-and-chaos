@@ -1,4 +1,4 @@
-export default function BarList({ data, colorClass = "bg-signal-blue" }) {
+export default function BarList({ data, colorClass = "bg-accent" }) {
   const entries = Object.entries(data || {});
   const max = Math.max(1, ...entries.map(([, v]) => v));
 
@@ -7,18 +7,15 @@ export default function BarList({ data, colorClass = "bg-signal-blue" }) {
   }
 
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-3">
       {entries.map(([label, value]) => (
         <div key={label}>
           <div className="flex justify-between text-xs mb-1">
             <span className="text-paper-300">{label}</span>
-            <span className="data-id text-paper-500">{value}</span>
+            <span className="font-mono text-paper-100 tabular-nums">{value}</span>
           </div>
-          <div className="h-1.5 bg-ink-700 w-full">
-            <div
-              className={`h-1.5 ${colorClass}`}
-              style={{ width: `${Math.max(4, (value / max) * 100)}%` }}
-            />
+          <div className="h-2 bg-ink-800 w-full">
+            <div className={`h-full ${colorClass}`} style={{ width: `${Math.max(2, (value / max) * 100)}%` }} />
           </div>
         </div>
       ))}

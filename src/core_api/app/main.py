@@ -8,8 +8,10 @@ from __future__ import annotations
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import OperationalError
 
 from .api import batches, firs, intelligence, system
 from .config import get_settings
@@ -36,6 +38,13 @@ def create_app() -> FastAPI:
     app.add_middleware(CORSMiddleware, allow_origins=s.cors_origins, allow_methods=["*"], allow_headers=["*"])
     for module in (batches, firs, intelligence, system):
         app.include_router(module.router)
+
+    @app.exception_handler(OperationalError)
+    async def database_busy(_request: Request, exc: OperationalError) -> JSONResponse:
+        # a JSON 503 (with CORS headers) instead of a bare 500, so the UI can say "busy, try again"
+        logging.getLogger("crimefir.api").warning("database error: %s", exc.orig)
+        return JSONResponse(status_code=503, content={"detail": "The database is busy. Please try again in a moment."})
+
     return app
 
 

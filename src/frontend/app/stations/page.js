@@ -42,7 +42,7 @@ export default function StationsPage() {
     }
   };
 
-  const input = "bg-ink-950 border border-ink-600 px-3 py-2 text-sm text-paper-100";
+  const input = "input";
   return (
     <div>
       <PageHeader title="Station briefs"
@@ -56,7 +56,7 @@ export default function StationsPage() {
             <input type="date" value={range.date_to} onChange={(e) => setRange({ ...range, date_to: e.target.value })} className={input} />
           </div>
         } />
-      <div className="p-8 space-y-6">
+      <div className="px-8 py-5 space-y-6">
         <ErrorBox error={error} />
         {facts ? (
           <>
@@ -70,7 +70,7 @@ export default function StationsPage() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="case-panel p-5">
-                <div className="text-sm text-paper-100 font-medium mb-1">Number of FIRs by crime type</div>
+                <div className="section-title mb-1">Number of FIRs by crime type</div>
                 <div className="text-[11px] text-paper-500 mb-4">this period (number in brackets = period before)</div>
                 <BarList data={Object.fromEntries(facts.crime_types.map((c) => [`${c.type} (${c.previous})`, c.count]))} />
                 {facts.rising.length ? (
@@ -78,17 +78,17 @@ export default function StationsPage() {
                 ) : null}
               </div>
               <div className="case-panel p-5">
-                <div className="text-sm text-paper-100 font-medium mb-4">How crimes were committed (most common)</div>
+                <div className="section-title mb-4">How crimes were committed (most common)</div>
                 {facts.top_methods.map((m) => <div key={m.method} className="text-xs text-paper-300 mb-1.5">· {m.method} <span className="text-paper-500">({m.count})</span></div>)}
-                <div className="text-sm text-paper-100 font-medium mt-5 mb-2">Same evidence also seen at other stations</div>
+                <div className="section-title mt-5 mb-2">Same evidence also seen at other stations</div>
                 {facts.linked_firs_at_other_stations.length ? facts.linked_firs_at_other_stations.map((x) => (
                   <div key={x.station} className="text-xs text-paper-300">· {x.station}: {x.firs} FIR(s)</div>
                 )) : <div className="text-xs text-paper-500">none</div>}
               </div>
               <div className="case-panel p-5">
-                <div className="text-sm text-paper-100 font-medium mb-4">Repeat-offender groups with FIRs here</div>
+                <div className="section-title mb-4">Repeat-offender groups with FIRs here</div>
                 {facts.flagged_clusters.length ? facts.flagged_clusters.map((c) => (
-                  <Link key={c.id} href={`/offenders/${c.id}`} className="block text-xs mb-2 hover:text-signal-amber">
+                  <Link key={c.id} href={`/offenders/${c.id}`} className="block text-xs mb-2 hover:text-accent">
                     <span className="data-id text-paper-100">{c.id}</span> <RiskBadge risk={c.risk_level} />{" "}
                     <span className="text-paper-500">{c.firs_here} FIR(s) here, {c.firs_total} in total across {c.stations} stations</span>
                   </Link>
@@ -100,13 +100,13 @@ export default function StationsPage() {
 
         <div className="case-panel p-5">
           <div className="flex justify-between items-center mb-4">
-            <div><div className="flex items-center gap-2 text-sm text-paper-100 font-medium">Written brief for the Station House Officer <InfoTip text={GLOSSARY.brief} /></div><div className="text-[11px] text-paper-500 mt-1">Input: the numbers above. Output: a short text written by IBM Granite (watsonx.ai), accepted only if every number in it matches the data.</div></div>
-            <button onClick={generate} disabled={busy || !station} className="bg-signal-amber text-ink-950 text-sm font-medium px-4 py-2 disabled:opacity-40">
+            <div><div className="flex items-center gap-2 section-title">Written brief for the Station House Officer <InfoTip text={GLOSSARY.brief} /></div><div className="text-[11px] text-paper-500 mt-1">Input: the numbers above. Output: a short text written by IBM Granite (watsonx.ai), accepted only if every number in it matches the data.</div></div>
+            <button onClick={generate} disabled={busy || !station} className="btn btn-primary">
               {busy ? "Writing…" : "Generate brief"}
             </button>
           </div>
           {reports.length === 0 ? <div className="text-sm text-paper-500">No briefs yet.</div> : reports.map((r) => (
-            <div key={r.id} className="border border-ink-700 p-4 mb-3">
+            <div key={r.id} className="rounded-lg border border-ink-700 p-4 mb-3">
               <div className="text-[11px] text-paper-500 mb-2">
                 {fmtDate(r.period_from)} – {fmtDate(r.period_to)} · {r.generated_by.startsWith("llm") ? "written by IBM Granite (watsonx.ai)" : "template (AI text not available or rejected)"} · {r.validated ? "all numbers checked against the data" : "not checked"} · created {fmtDate(r.created_at)}
               </div>

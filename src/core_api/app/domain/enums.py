@@ -9,6 +9,7 @@ class BatchStatus(StrEnum):
     COMPLETED = "COMPLETED"
     COMPLETED_WITH_ERRORS = "COMPLETED_WITH_ERRORS"
     FAILED = "FAILED"
+    CANCELLING = "CANCELLING"          # user pressed Stop; unfinished FIRs are removed by the worker
     CANCELLED = "CANCELLED"
 
 

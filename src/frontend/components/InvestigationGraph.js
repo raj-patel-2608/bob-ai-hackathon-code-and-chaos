@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { forceX, forceY } from "d3-force";
 import { fmtDate, fmtMoney, IDENTITY_LABELS } from "../lib/api";
+import { useThemeColors } from "../lib/theme";
 
 // canvas graph (uses window), so it is loaded only in the browser
 const ForceGraph2D = dynamic(() => import("./ForceGraphClient"), { ssr: false });
@@ -38,6 +39,8 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
   const [showLabels, setShowLabels] = useState(true);
   const [hover, setHover] = useState(null);
   const [selected, setSelected] = useState(null);
+  const theme = useThemeColors();
+  const T = theme || { bg: "#0B1012", fg: "#E9ECEC", subtle: "#8B979E", c: (_n, a) => `rgba(139,151,158,${a})` };
 
   useEffect(() => {
     if (!wrapRef.current) return;
@@ -144,8 +147,9 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
     fg.d3Force("y", mode === "network" ? forceY((n) => n.cellY).strength(0.2) : null);
     fitPending.current = true;                    // fit once the layout has settled (see onEngineStop)
     fg.d3ReheatSimulation?.();
-    const t = setTimeout(() => fgRef.current?.zoomToFit(600, 50), 2500);   // fallback if the engine stops early
-    return () => clearTimeout(t);
+    // fit again while the layout settles (the engine-stop fit alone can fire before the groups spread out)
+    const timers = [1500, 3500, 6000].map((ms) => setTimeout(() => fgRef.current?.zoomToFit(600, 80), ms));
+    return () => timers.forEach(clearTimeout);
   }, [ready, mode, data]);
 
   // ------------------------------------------------------------------ drawing
@@ -156,11 +160,11 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
     const lit = isLit(node.id);
     ctx.globalAlpha = lit ? 1 : 0.12;
     if (node.kind === "fir") {
-      const color = CATEGORY[node.crime_major]?.color || "#8B979E";
+      const color = CATEGORY[node.crime_major]?.color || T.subtle;
       const r = node.id === focusId ? 9 : 7;
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-      ctx.fillStyle = "#0B1012";
+      ctx.fillStyle = T.bg;
       ctx.fill();
       ctx.lineWidth = node.id === focusId ? 3 : 2;
       ctx.strokeStyle = color;
@@ -174,11 +178,11 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
       }
       if (showLabels && scale > labelScale) {
         ctx.font = `${10 / Math.min(scale, 1.6)}px sans-serif`;
-        ctx.fillStyle = "#E9ECEC";
+        ctx.fillStyle = T.fg;
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
         ctx.fillText(node.id, node.x, node.y + r + 2);
-        ctx.fillStyle = "#8B979E";
+        ctx.fillStyle = T.subtle;
         ctx.fillText(`${node.station || ""} · ${node.registered_at ? fmtDate(node.registered_at) : ""}`,
           node.x, node.y + r + 2 + 12 / Math.min(scale, 1.6));
       }
@@ -202,7 +206,7 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
       }
     }
     ctx.globalAlpha = 1;
-  }, [isLit, focusId, showLabels, labelScale]);
+  }, [isLit, focusId, showLabels, labelScale, T]);
 
   const drawAxis = useCallback((ctx, scale) => {
     const ax = data.axis;
@@ -219,7 +223,7 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
       Object.entries(boxes).forEach(([id, b]) => {
-        ctx.fillStyle = active && active.group !== id ? "rgba(233,236,236,0.15)" : "rgba(233,236,236,0.75)";
+        ctx.fillStyle = T.c("fg", active && active.group !== id ? 0.15 : 0.75);
         ctx.fillText(`Group ${id}`, b.x / b.n, b.top - 22 / Math.min(scale, 1.4));
       });
       ctx.restore();
@@ -233,15 +237,15 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
     ctx.textBaseline = "bottom";
     for (let t = d.getTime(); t <= ax.max; ) {
       const px = ax.x(Math.max(t, ax.min));
-      ctx.strokeStyle = "rgba(139,151,158,0.18)";
+      ctx.strokeStyle = T.c("fg-subtle", 0.25);
       ctx.lineWidth = 1 / scale;
       ctx.beginPath(); ctx.moveTo(px, ax.top); ctx.lineTo(px, ax.bottom); ctx.stroke();
-      ctx.fillStyle = "#8B979E";
+      ctx.fillStyle = T.subtle;
       ctx.fillText(new Date(t).toLocaleDateString("en-IN", { month: "short", year: "numeric" }), px + 4 / scale, ax.top);
       const next = new Date(t); next.setMonth(next.getMonth() + 1); t = next.getTime();
     }
     ctx.restore();
-  }, [data, active]);
+  }, [data, active, T]);
 
   const firs = data.nodes.filter((n) => n.kind === "fir");
   const identityTypes = [...new Set(data.nodes.filter((n) => n.kind === "identity").map((n) => n.identity_type))];
@@ -252,17 +256,17 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
   return (
     <div className="relative">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-2 px-1">
-        <div className="flex border border-ink-600 text-xs">
+        <div className="flex border border-ink-600 font-mono text-[11px] uppercase tracking-[0.06em]">
           {[["network", "Network view"], ["timeline", "Timeline view"]].map(([k, label]) => (
             <button key={k} onClick={() => { setMode(k); setSelected(null); }}
-              className={`px-3 py-1.5 ${mode === k ? "bg-signal-amber text-ink-950 font-medium" : "text-paper-300 hover:bg-ink-800"}`}>
+              className={`px-3 py-1.5 ${mode === k ? "bg-navy text-white" : "text-paper-300 hover:bg-ink-800"}`}>
               {label}
             </button>
           ))}
         </div>
         <div className="flex items-center gap-4 text-xs text-paper-300">
           <label className="flex items-center gap-1.5"><input type="checkbox" checked={showLabels} onChange={(e) => setShowLabels(e.target.checked)} /> labels</label>
-          <button onClick={() => fgRef.current?.zoomToFit(600, 60)} className="border border-ink-600 px-2.5 py-1 hover:bg-ink-800">Fit to screen</button>
+          <button onClick={() => fgRef.current?.zoomToFit(600, 60)} className="btn btn-secondary btn-sm">Fit to screen</button>
         </div>
       </div>
       {mode === "timeline" ? (
@@ -271,34 +275,34 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
         </div>
       ) : null}
 
-      <div ref={wrapRef} className="relative border border-ink-700 bg-[#0B1012]">
+      <div ref={wrapRef} className="relative border border-ink-700 bg-ink-950">
         <ForceGraph2D
           onInstance={onInstance}
           graphData={data}
           width={width}
           height={height}
-          backgroundColor="#0B1012"
+          backgroundColor={T.bg}
           nodeRelSize={6}
           nodeCanvasObject={drawNode}
           onRenderFramePre={(ctx, scale) => drawAxis(ctx, scale)}
           nodePointerAreaPaint={(node, color, ctx) => { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI); ctx.fill(); }}
-          linkColor={(l) => (linkLit(l) ? (l.kind === "PATTERN" ? PATTERN_COLOR : IDENTITY_COLOR[l.identity_type] || "#8B979E") : "rgba(80,90,100,0.15)")}
+          linkColor={(l) => (linkLit(l) ? (l.kind === "PATTERN" ? PATTERN_COLOR : IDENTITY_COLOR[l.identity_type] || T.subtle) : T.c("fg-subtle", 0.15))}
           linkWidth={(l) => (l.kind === "PATTERN" ? 1.2 : linkLit(l) && active ? 3 : 2)}
           linkLineDash={(l) => (l.kind === "PATTERN" ? [5, 4] : null)}
           linkDirectionalParticles={(l) => (l.kind === "EVIDENCE" && linkLit(l) ? 2 : 0)}
           linkDirectionalParticleWidth={3}
           linkDirectionalParticleSpeed={0.006}
-          linkDirectionalParticleColor={(l) => IDENTITY_COLOR[l.identity_type] || "#E9ECEC"}
+          linkDirectionalParticleColor={(l) => IDENTITY_COLOR[l.identity_type] || T.fg}
           onNodeHover={(n) => setHover(n || null)}
           onNodeClick={(n) => { setSelected(n); fgRef.current?.centerAt(n.x, n.y, 600); }}
           onBackgroundClick={() => setSelected(null)}
           cooldownTicks={mode === "timeline" ? 60 : 250}
-          onEngineStop={() => { if (fitPending.current) { fitPending.current = false; fgRef.current?.zoomToFit(600, 50); } }}
+          onEngineStop={() => { if (fitPending.current) { fitPending.current = false; fgRef.current?.zoomToFit(600, 80); } }}
           d3VelocityDecay={0.35}
         />
 
         <div className="absolute left-3 bottom-3 bg-ink-900/90 border border-ink-700 p-3 text-[11px] text-paper-300 space-y-1 max-w-[240px]">
-          <div className="text-paper-500 uppercase tracking-wide text-[10px] mb-1">Legend</div>
+          <div className="label mb-1">Legend</div>
           {Object.entries(CATEGORY).filter(([k]) => firs.some((f) => f.crime_major === k)).map(([k, v]) => (
             <div key={k} className="flex items-center gap-2"><span className="inline-block w-3 h-3 rounded-full border-2" style={{ borderColor: v.color }} /> case: {v.label}</div>
           ))}
@@ -321,13 +325,13 @@ export default function InvestigationGraph({ graph, focusId, height = 620, initi
                 <div className="text-paper-500">{sel.station} ({sel.district}) · {fmtDate(sel.registered_at)} · {fmtMoney(sel.amount)}</div>
                 {sel.cluster_id ? <div className="text-paper-500">Group {sel.cluster_id} · case #{sel.order} in time order</div> : null}
                 <div className="text-paper-300">{sel.summary}</div>
-                <Link href={`/firs/${encodeURIComponent(sel.id)}`} className="inline-block text-signal-amber hover:underline">Open case file ›</Link>
+                <Link href={`/firs/${encodeURIComponent(sel.id)}`} className="inline-block link">Open case file ›</Link>
               </>
             ) : (
               <>
                 <div className="text-paper-500">Shared {IDENTITY_LABELS[sel.identity_type]?.toLowerCase()} found in {selLinks.length} FIR(s):</div>
                 {selLinks.sort((a, b) => (a.t || 0) - (b.t || 0)).map((f) => (
-                  <Link key={f.id} href={`/firs/${encodeURIComponent(f.id)}`} className="block text-paper-300 hover:text-signal-amber">
+                  <Link key={f.id} href={`/firs/${encodeURIComponent(f.id)}`} className="block text-paper-300 hover:text-accent">
                     · {f.id} · {f.station} · {fmtDate(f.registered_at)}
                   </Link>
                 ))}

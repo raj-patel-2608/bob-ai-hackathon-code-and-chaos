@@ -1,64 +1,26 @@
 /** @type {import('tailwindcss').Config} */
+// Colours are CSS variables (see app/globals.css), so every class follows the light / dark theme.
+const v = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx}",
-    "./components/**/*.{js,jsx}",
-  ],
+  content: ["./app/**/*.{js,jsx}", "./components/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
-        ink: {
-          950: "#0B1012",
-          900: "#10161A",
-          800: "#171E23",
-          700: "#212A30",
-          600: "#2C373E",
-        },
-        paper: {
-          100: "#E9ECEC",
-          300: "#B7C0C4",
-          500: "#8B979E",
-        },
-        signal: {
-          amber: "#D9A441",
-          amberDim: "#8A6A2F",
-          red: "#C1442E",
-          redDim: "#7A3226",
-          blue: "#4C7EA8",
-          green: "#5C8A6B",
-        },
+        ink: { 950: v("bg"), 900: v("sidebar"), 800: v("surface-2"), 700: v("border"), 600: v("border-strong") },
+        paper: { 100: v("fg"), 300: v("fg-muted"), 500: v("fg-subtle") },
+        surface: v("surface"),
+        accent: v("accent"),
+        navy: v("navy"),
+        khaki: v("khaki"),
+        signal: { amber: v("amber"), red: v("red"), blue: v("blue"), green: v("green") },
       },
       fontFamily: {
-        // System font stacks only — no external font fetch, so the tool
-        // builds and runs fully offline on a station network.
-        serif: [
-          "Iowan Old Style",
-          "Palatino Linotype",
-          "URW Palladio L",
-          "P052",
-          "Georgia",
-          "serif",
-        ],
-        sans: [
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Arial",
-          "sans-serif",
-        ],
-        mono: [
-          "SFMono-Regular",
-          "Consolas",
-          "Liberation Mono",
-          "Menlo",
-          "monospace",
-        ],
+        // bundled with the app (@fontsource), so the UI looks the same offline on a station network
+        sans: ["IBM Plex Sans", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        mono: ["Roboto Mono", "Consolas", "Liberation Mono", "Menlo", "monospace"],
       },
-      boxShadow: {
-        none: "none",
-      },
+      borderRadius: { DEFAULT: "2px", sm: "2px", md: "3px", lg: "3px", xl: "4px" },
     },
   },
   plugins: [],
