@@ -108,7 +108,8 @@ def run_decide(session: Session, runs: list[FirStageRun]) -> None:
         return
     for run in runs:
         try:
-            decision = decisions.interpret_laya(by_id[run.fir_id]["answers"], label_to_id, tax, s.mo_flag_threshold)
+            decision = decisions.interpret_laya(by_id[run.fir_id]["answers"], label_to_id, tax, s.mo_flag_threshold,
+                                                decisions.load_calibration(s.calibration_path))
             a = _analysis(session, run.fir_id)
             _apply_decision(a, decision, DecidedBy.LAYA)
             _set_model_version(a, "decision", meta.model_id)
@@ -125,6 +126,7 @@ def _apply_decision(a: FirAnalysis, d: dict, by: DecidedBy) -> None:
     a.crime_minor, a.crime_major = d["crime_minor"], d["crime_major"]
     a.crime_confidence, a.crime_probabilities = d["confidence"], d["probabilities"]
     a.mo_flags = d["mo_flags"]
+    a.mo_probabilities = d.get("mo_probabilities") or None
     a.decided_by = by
     if d.get("victim_female") is not None:
         victim = dict(a.victim or {})

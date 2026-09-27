@@ -83,6 +83,10 @@ def _search_conditions(q: str):
         candidates.add(phone)
     candidates.discard("")
     conditions.append(Fir.id.in_(select(Entity.fir_id).where(Entity.value.in_(candidates))))
+    digits = re.sub(r"\D", "", q)
+    if len(digits) >= 5:                                   # partial number an investigator remembers
+        conditions.append(Fir.id.in_(select(Entity.fir_id).where(Entity.role != "complainant",
+                                                                 Entity.value.contains(digits))))
     return conditions
 
 

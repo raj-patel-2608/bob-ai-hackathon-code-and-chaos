@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "crimefir": {
+      "command": "src/mcp_server/.venv/Scripts/python.exe",
+      "args": ["src/mcp_server/server.py"],
+      "env": {
+        "CRIMEFIR_API_URL": "http://127.0.0.1:8000"
+      },
+      "alwaysAllow": [
+        "system_overview", "search_firs", "get_fir", "find_related_firs", "explain_link",
+        "list_flagged_offenders", "get_offender_cluster", "list_stations", "station_trends", "batch_status"
+      ],
+      "disabled": false
+    }
+  }
+}

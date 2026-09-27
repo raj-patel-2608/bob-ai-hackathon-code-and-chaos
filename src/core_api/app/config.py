@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     database_url: str = f"sqlite:///{(REPO_DIR / 'var' / 'crimefir.db').as_posix()}"
     upload_dir: Path = REPO_DIR / "var" / "uploads"
     taxonomy_path: Path = SRC_DIR / "shared" / "taxonomy.json"
+    calibration_path: Path = SRC_DIR / "shared" / "calibration.json"   # written by scripts/calibrate.py
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     # limits
@@ -46,9 +47,9 @@ class Settings(BaseSettings):
     backoff_base_s: float = 5.0
 
     # intelligence
-    soft_link_min_similarity: float = 0.86
+    soft_link_min_similarity: float = 0.97      # dev: precision 0.27 at 0.97, 0.06 at 0.86 (scripts/calibrate.py)
     soft_link_max_days: int = 60
-    soft_links_per_fir: int = 3
+    soft_links_per_fir: int = 1
 
 
 @lru_cache

@@ -1,0 +1,27 @@
+# Which model serves each capability. Change a model here, restart the service; no code changes.
+# device: auto = GPU if available and enough free memory, otherwise CPU (with runtime fallback on GPU errors)
+
+decision:
+  provider: laya                         # laya
+  model: convaiinnovations/laya
+  checkpoint: typed-decisions            # chosen in the Phase-0 spike (dev split)
+  device: auto
+  min_free_vram_mb: 1500
+
+embedding:
+  provider: sentence_transformers        # any sentence-transformers model id
+  model: ibm-granite/granite-embedding-30m-english
+  device: auto
+  min_free_vram_mb: 300
+  batch_size: 32
+
+generator:
+  provider: watsonx                      # watsonx | none
+  # first model in this list that the watsonx project can use is selected at startup
+  model_candidates:
+    - ibm/granite-4-h-small
+    - ibm/granite-3-3-8b-instruct
+    - ibm/granite-3-8b-instruct
+  api_version: "2024-05-31"
+  temperature: 0
+  timeout_s: 60

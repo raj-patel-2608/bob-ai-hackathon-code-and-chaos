@@ -7,7 +7,9 @@ Three tiers:
 """
 from __future__ import annotations
 
+import json
 import re
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -67,7 +69,23 @@ def laya_questions(tax: Taxonomy) -> tuple[dict, dict[str, str]]:
     return questions, label_to_id
 
 
-def interpret_laya(answers: dict, label_to_id: dict[str, str], tax: Taxonomy, mo_threshold: float) -> dict:
+def load_calibration(path: Path) -> dict:
+    """Per-MO-flag thresholds tuned on the dev split (scripts/calibrate.py). Missing file -> defaults."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def select_mo_flags(mo_probabilities: dict[str, float], default_threshold: float, calibration: dict) -> dict:
+    thresholds = calibration.get("mo_thresholds", {})
+    disabled = set(calibration.get("mo_disabled", []))
+    return {flag: p for flag, p in mo_probabilities.items()
+            if flag not in disabled and p >= thresholds.get(flag, default_threshold)}
+
+
+def interpret_laya(answers: dict, label_to_id: dict[str, str], tax: Taxonomy, mo_threshold: float,
+                   calibration: dict | None = None) -> dict:
     minor_ans = answers["crime_minor"]
     minor = label_to_id[minor_ans["choice"]]
     probs = {label_to_id[k]: round(float(v), 4) for k, v in (minor_ans.get("probabilities") or {}).items()
@@ -78,7 +96,7 @@ def interpret_laya(answers: dict, label_to_id: dict[str, str], tax: Taxonomy, mo
         "crime_major": tax.major_of(minor),
         "confidence": float(minor_ans.get("answer_confidence", minor_ans.get("confidence", 0.0))),
         "probabilities": probs,
-        "mo_flags": {k: p for k, p in mo.items() if p >= mo_threshold},
+        "mo_flags": select_mo_flags(mo, mo_threshold, calibration or {}),
         "mo_probabilities": mo,
         "victim_female": float(answers["victim_female"]["noul"]),
     }

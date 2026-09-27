@@ -114,7 +114,8 @@ class FirAnalysis(Base):
     crime_probabilities: Mapped[dict | None] = mapped_column(JSON)
     decided_by: Mapped[str | None] = mapped_column(String(20))
     escalated: Mapped[bool] = mapped_column(Boolean, default=False)
-    mo_flags: Mapped[dict | None] = mapped_column(JSON)                 # flag -> probability
+    mo_flags: Mapped[dict | None] = mapped_column(JSON)                 # accepted flags -> probability
+    mo_probabilities: Mapped[dict | None] = mapped_column(JSON)         # every flag -> probability (for calibration)
     victim: Mapped[dict | None] = mapped_column(JSON)                   # age, age_group, gender, occupation
     accused: Mapped[list | None] = mapped_column(JSON)                  # [{name, alias, as_written, source}]
     amount: Mapped[int | None] = mapped_column(Integer)

@@ -1,0 +1,183 @@
+{
+  "created_at": "2026-09-27T21:44:37",
+  "tuned_on": "dev split",
+  "dev_firs": 95,
+  "min_f1": 0.4,
+  "mo_thresholds": {
+    "advance_or_fee_payment": 0.25,
+    "asked_otp_or_card_details": 0.6,
+    "fake_relationship_or_marriage": 0.25,
+    "forced_entry": 0.65,
+    "impersonated_army_officer": 0.4,
+    "impersonated_bank_official": 0.7,
+    "impersonated_police_or_agency": 0.6,
+    "loan_app_recovery_harassment": 0.6,
+    "money_to_mule_account": 0.25,
+    "morphed_or_obscene_content": 0.45,
+    "paid_tasks_or_job_offer": 0.65,
+    "phishing_link_or_fake_app": 0.2,
+    "physical_violence": 0.7,
+    "promise_of_high_returns": 0.6,
+    "threat_of_arrest_or_case": 0.75,
+    "vehicle_taken_from_parking": 0.5,
+    "verbal_threat_in_person": 0.55,
+    "weapon_shown": 0.35
+  },
+  "mo_disabled": [
+    "fake_marketplace_listing",
+    "impersonated_customer_care",
+    "motorcycle_used",
+    "premises_unoccupied",
+    "remote_access_app",
+    "video_call_used"
+  ],
+  "mo_report": {
+    "advance_or_fee_payment": {
+      "threshold": 0.25,
+      "dev_f1": 0.667,
+      "dev_positives": 15
+    },
+    "asked_otp_or_card_details": {
+      "threshold": 0.6,
+      "dev_f1": 0.778,
+      "dev_positives": 10
+    },
+    "fake_marketplace_listing": {
+      "threshold": 0.25,
+      "dev_f1": 0.129,
+      "dev_positives": 3
+    },
+    "fake_relationship_or_marriage": {
+      "threshold": 0.25,
+      "dev_f1": 0.909,
+      "dev_positives": 6
+    },
+    "forced_entry": {
+      "threshold": 0.65,
+      "dev_f1": 0.545,
+      "dev_positives": 8
+    },
+    "impersonated_army_officer": {
+      "threshold": 0.4,
+      "dev_f1": 0.857,
+      "dev_positives": 3
+    },
+    "impersonated_bank_official": {
+      "threshold": 0.7,
+      "dev_f1": 0.778,
+      "dev_positives": 8
+    },
+    "impersonated_customer_care": {
+      "threshold": 0.25,
+      "dev_f1": 0.294,
+      "dev_positives": 6
+    },
+    "impersonated_police_or_agency": {
+      "threshold": 0.6,
+      "dev_f1": 0.8,
+      "dev_positives": 4
+    },
+    "loan_app_recovery_harassment": {
+      "threshold": 0.6,
+      "dev_f1": 0.526,
+      "dev_positives": 5
+    },
+    "money_to_mule_account": {
+      "threshold": 0.25,
+      "dev_f1": 0.935,
+      "dev_positives": 37
+    },
+    "morphed_or_obscene_content": {
+      "threshold": 0.45,
+      "dev_f1": 1.0,
+      "dev_positives": 6
+    },
+    "motorcycle_used": {
+      "threshold": 0.65,
+      "dev_f1": 1.0,
+      "dev_positives": 2
+    },
+    "paid_tasks_or_job_offer": {
+      "threshold": 0.65,
+      "dev_f1": 1.0,
+      "dev_positives": 7
+    },
+    "phishing_link_or_fake_app": {
+      "threshold": 0.2,
+      "dev_f1": 0.471,
+      "dev_positives": 8
+    },
+    "physical_violence": {
+      "threshold": 0.7,
+      "dev_f1": 1.0,
+      "dev_positives": 11
+    },
+    "premises_unoccupied": {
+      "threshold": 0.15,
+      "dev_f1": 0.314,
+      "dev_positives": 8
+    },
+    "promise_of_high_returns": {
+      "threshold": 0.6,
+      "dev_f1": 1.0,
+      "dev_positives": 5
+    },
+    "remote_access_app": {
+      "threshold": 0.35,
+      "dev_f1": 0.333,
+      "dev_positives": 4
+    },
+    "threat_of_arrest_or_case": {
+      "threshold": 0.75,
+      "dev_f1": 0.857,
+      "dev_positives": 4
+    },
+    "vehicle_taken_from_parking": {
+      "threshold": 0.5,
+      "dev_f1": 0.634,
+      "dev_positives": 16
+    },
+    "verbal_threat_in_person": {
+      "threshold": 0.55,
+      "dev_f1": 0.571,
+      "dev_positives": 6
+    },
+    "video_call_used": {
+      "threshold": 0.75,
+      "dev_f1": 1.0,
+      "dev_positives": 2
+    },
+    "weapon_shown": {
+      "threshold": 0.35,
+      "dev_f1": 0.833,
+      "dev_positives": 10
+    }
+  },
+  "pattern_links_dev": {
+    "0.86": {
+      "pairs": 91,
+      "same_offender": 5,
+      "precision": 0.055
+    },
+    "0.9": {
+      "pairs": 58,
+      "same_offender": 4,
+      "precision": 0.069
+    },
+    "0.93": {
+      "pairs": 40,
+      "same_offender": 4,
+      "precision": 0.1
+    },
+    "0.95": {
+      "pairs": 26,
+      "same_offender": 4,
+      "precision": 0.154
+    },
+    "0.97": {
+      "pairs": 11,
+      "same_offender": 3,
+      "precision": 0.273
+    }
+  }
+}

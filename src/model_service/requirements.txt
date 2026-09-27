@@ -1,0 +1,12 @@
+# CUDA build of PyTorch (also runs on CPU-only machines)
+--extra-index-url https://download.pytorch.org/whl/cu128
+fastapi==0.141.1
+httpx==0.28.1
+laya==0.3.20
+pydantic-settings==2.15.0
+pytest==9.1.1
+PyYAML==6.0.3
+sentence-transformers==6.1.0
+torch==2.11.0+cu128
+transformers==5.17.0
+uvicorn[standard]==0.54.0
