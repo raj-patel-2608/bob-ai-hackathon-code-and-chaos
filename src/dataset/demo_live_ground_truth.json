@@ -1,0 +1,219 @@
+{
+ "generator": "src/dataset/generator/build.py",
+ "seed": 20260927,
+ "taxonomy_version": "1.0.0",
+ "note": "Answer key. Never give this file to the pipeline.",
+ "firs": [
+  {
+   "fir_key": "AHD-NAV-2026-0236",
+   "split": "live_demo",
+   "station_code": "NAV",
+   "station": "Navrangpura",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-22",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.kyc_bank_impersonation",
+   "mo_flags": [
+    "impersonated_bank_official",
+    "money_to_mule_account",
+    "phishing_link_or_fake_app",
+    "remote_access_app"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "retired government employee"
+   },
+   "amount": 145500,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+918127440258",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+918000055415",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": "C01",
+   "decoy_of": null,
+   "evidence_linkable": true
+  },
+  {
+   "fir_key": "AHD-SAT-2026-0221",
+   "split": "live_demo",
+   "station_code": "SAT",
+   "station": "Satellite",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-24",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.digital_arrest",
+   "mo_flags": [
+    "impersonated_police_or_agency",
+    "money_to_mule_account",
+    "threat_of_arrest_or_case",
+    "video_call_used"
+   ],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "textile trader"
+   },
+   "amount": 3546500,
+   "identifiers": [
+    {
+     "type": "bank_account",
+     "value": "40258517360305",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+917738822094",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": "C03",
+   "decoy_of": null,
+   "evidence_linkable": true
+  },
+  {
+   "fir_key": "AHD-SAT-2026-0224",
+   "split": "live_demo",
+   "station_code": "SAT",
+   "station": "Satellite",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-26",
+   "crime_major": "property",
+   "crime_minor": "property.snatching",
+   "mo_flags": [
+    "motorcycle_used"
+   ],
+   "victim": {
+    "age_group": "above_60",
+    "gender": "female",
+    "occupation": "retired bank clerk"
+   },
+   "amount": 66500,
+   "identifiers": [
+    {
+     "type": "vehicle",
+     "value": "GJ01SZ8030",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+919232968077",
+     "role": "complainant"
+    }
+   ],
+   "accused": {
+    "canonical": "Arvind V. Chauhan",
+    "alias": null,
+    "as_written": "Arvind V. Chauhan"
+   },
+   "cluster_id": "C10",
+   "decoy_of": null,
+   "evidence_linkable": true
+  },
+  {
+   "fir_key": "VAD-GOT-2026-0242",
+   "split": "live_demo",
+   "station_code": "GOT",
+   "station": "Gotri",
+   "district": "Vadodara City",
+   "registered_on": "2026-09-26",
+   "crime_major": "property",
+   "crime_minor": "property.theft_other",
+   "mo_flags": [],
+   "victim": {
+    "age_group": "46_60",
+    "gender": "male",
+    "occupation": "chartered accountant"
+   },
+   "amount": 27500,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+918777422043",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "SRT-ATH-2026-0235",
+   "split": "live_demo",
+   "station_code": "ATH",
+   "station": "Athwa",
+   "district": "Surat City",
+   "registered_on": "2026-09-23",
+   "crime_major": "body",
+   "crime_minor": "body.assault",
+   "mo_flags": [
+    "physical_violence",
+    "weapon_shown"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "delivery partner"
+   },
+   "amount": 0,
+   "identifiers": [],
+   "accused": {
+    "canonical": "Kunal R. Sheikh",
+    "alias": null,
+    "as_written": "Kunal R. Sheikh"
+   },
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  },
+  {
+   "fir_key": "AHD-VAS-2026-0267",
+   "split": "live_demo",
+   "station_code": "VAS",
+   "station": "Vastrapur",
+   "district": "Ahmedabad City",
+   "registered_on": "2026-09-25",
+   "crime_major": "cyber",
+   "crime_minor": "cyber.fake_customer_care",
+   "mo_flags": [
+    "advance_or_fee_payment",
+    "asked_otp_or_card_details",
+    "impersonated_customer_care",
+    "money_to_mule_account",
+    "phishing_link_or_fake_app"
+   ],
+   "victim": {
+    "age_group": "18_30",
+    "gender": "male",
+    "occupation": "student"
+   },
+   "amount": 106500,
+   "identifiers": [
+    {
+     "type": "phone",
+     "value": "+917130334006",
+     "role": "offender"
+    },
+    {
+     "type": "phone",
+     "value": "+916134096979",
+     "role": "complainant"
+    }
+   ],
+   "accused": null,
+   "cluster_id": null,
+   "decoy_of": null,
+   "evidence_linkable": false
+  }
+ ]
+}

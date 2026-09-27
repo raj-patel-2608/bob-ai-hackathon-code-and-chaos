@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "description": "CrimeFIR classification taxonomy. Crime types follow the NCRB Crime Details Form (I.I.F.-II) idea of Major Head / Minor Head; MO flags correspond to its 'Method(s)' field. Single source of truth for the pipeline, the dataset generator and the evaluation.",
+  "crime_major": {
+    "cyber": {
+      "label": "Cyber Crime",
+      "hint": "offence committed using phones, internet, apps, online payments or social media"
+    },
+    "property": {
+      "label": "Crimes against Property",
+      "hint": "physical theft, burglary, snatching or robbery of property"
+    },
+    "body": {
+      "label": "Crimes against the Body",
+      "hint": "physical assault, hurt, threats or intimidation of a person"
+    },
+    "economic": {
+      "label": "Economic Offences (offline)",
+      "hint": "cheating or fraud done in person or on paper, without an online channel"
+    }
+  },
+  "crime_minor": {
+    "cyber.kyc_bank_impersonation": {
+      "major": "cyber",
+      "label": "OTP/KYC & bank-impersonation fraud",
+      "hint": "caller poses as bank, card or KYC staff and takes OTP, card details or remote access to empty the account"
+    },
+    "cyber.fake_customer_care": {
+      "major": "cyber",
+      "label": "Fake customer-care / helpline fraud",
+      "hint": "victim calls a fake helpline number found online for a refund, courier or service complaint and is cheated"
+    },
+    "cyber.digital_arrest": {
+      "major": "cyber",
+      "label": "Digital arrest / official impersonation",
+      "hint": "fraudsters pose as police, CBI, customs or courier officials, threaten arrest over a parcel or case and demand money"
+    },
+    "cyber.investment_trading": {
+      "major": "cyber",
+      "label": "Investment / trading-app fraud",
+      "hint": "victim is lured to invest in fake stock, crypto or trading apps promising high returns"
+    },
+    "cyber.job_task": {
+      "major": "cyber",
+      "label": "Online job / task fraud",
+      "hint": "part-time job or paid online tasks such as reviews or likes, then deposits demanded to unlock earnings"
+    },
+    "cyber.loan_app": {
+      "major": "cyber",
+      "label": "Loan-app harassment & extortion",
+      "hint": "instant loan app agents harass, abuse or threaten with morphed photos to extort repayment"
+    },
+    "cyber.sextortion": {
+      "major": "cyber",
+      "label": "Sextortion / online blackmail",
+      "hint": "obscene video call is recorded and victim is blackmailed, often by callers posing as police"
+    },
+    "cyber.marketplace": {
+      "major": "cyber",
+      "label": "Online marketplace fraud",
+      "hint": "fake seller or buyer on an online marketplace, often posing as an army officer, takes advance payments"
+    },
+    "cyber.matrimonial": {
+      "major": "cyber",
+      "label": "Matrimonial / romance fraud",
+      "hint": "fake profile on a matrimonial or dating site builds a relationship and takes money"
+    },
+    "property.vehicle_theft": {
+      "major": "property",
+      "label": "Vehicle theft",
+      "hint": "two-wheeler, car or other vehicle stolen from where it was parked"
+    },
+    "property.burglary": {
+      "major": "property",
+      "label": "House burglary",
+      "hint": "house, flat or shop broken into, usually when locked or empty, and valuables stolen"
+    },
+    "property.snatching": {
+      "major": "property",
+      "label": "Chain / mobile snatching",
+      "hint": "chain, purse or mobile snatched from a person on the road, often by men on a motorcycle"
+    },
+    "property.robbery": {
+      "major": "property",
+      "label": "Robbery",
+      "hint": "property taken from a person by force or by threatening with a weapon"
+    },
+    "property.theft_other": {
+      "major": "property",
+      "label": "Other theft",
+      "hint": "theft of property without force, such as pickpocketing, theft from shop, office or bus"
+    },
+    "body.assault": {
+      "major": "body",
+      "label": "Assault / hurt",
+      "hint": "a person is beaten, attacked or injured"
+    },
+    "body.intimidation": {
+      "major": "body",
+      "label": "Criminal intimidation",
+      "hint": "a person is threatened with harm, without an online fraud, often over a dispute"
+    },
+    "economic.cheating_offline": {
+      "major": "economic",
+      "label": "Cheating (offline)",
+      "hint": "cheated in person, for example a fake job agent, land or plot deal, or chit fund, without an online channel"
+    }
+  },
+  "mo_flags": {
+    "impersonated_bank_official": "the offender pretended to be from a bank, card department or KYC team",
+    "impersonated_customer_care": "the offender pretended to be customer care or a helpline of a company",
+    "impersonated_police_or_agency": "the offender pretended to be police, CBI, customs, courier or another government officer",
+    "impersonated_army_officer": "the offender pretended to be an army or defence officer",
+    "asked_otp_or_card_details": "the victim was asked to share an OTP, PIN, CVV or card details",
+    "remote_access_app": "the victim was made to install a screen-sharing or remote-access app such as AnyDesk or QuickSupport",
+    "phishing_link_or_fake_app": "the victim was sent a link, APK or fake app or website",
+    "video_call_used": "a video call was part of the crime",
+    "threat_of_arrest_or_case": "the victim was threatened with arrest, a police case or legal action",
+    "morphed_or_obscene_content": "morphed, obscene or intimate photos or videos were used to threaten",
+    "promise_of_high_returns": "the victim was promised high profits or returns on money",
+    "paid_tasks_or_job_offer": "the victim was offered a job or paid online tasks",
+    "advance_or_fee_payment": "the victim paid an advance, fee, charge or deposit before receiving something",
+    "fake_marketplace_listing": "a fake item was listed for sale online",
+    "fake_relationship_or_marriage": "the offender built a romantic or marriage relationship to gain trust",
+    "loan_app_recovery_harassment": "loan app agents harassed the victim or the victim's contacts",
+    "money_to_mule_account": "money was transferred to a bank account or UPI ID controlled by the offenders",
+    "motorcycle_used": "the offenders used a motorcycle or scooter to commit or flee",
+    "weapon_shown": "a knife, gun or other weapon was used or shown",
+    "forced_entry": "a lock, door, window or grill was broken to enter",
+    "premises_unoccupied": "the house or shop was locked or empty at the time",
+    "vehicle_taken_from_parking": "a vehicle was stolen from where it was parked",
+    "physical_violence": "the victim was beaten or physically hurt",
+    "verbal_threat_in_person": "the victim was threatened face to face or over a personal dispute"
+  },
+  "victim_age_groups": ["below_18", "18_30", "31_45", "46_60", "above_60"],
+  "victim_genders": ["male", "female", "other"],
+  "entity_types": ["phone", "bank_account", "upi_id", "imei", "vehicle", "online_handle", "accused_name", "place"]
+}

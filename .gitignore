@@ -94,3 +94,6 @@ logs/
 .terraform/
 *.tfstate
 *.tfstate.backup
+
+# ── CrimeFIR runtime data (database, uploads, logs) ─────────────────────────
+var/
