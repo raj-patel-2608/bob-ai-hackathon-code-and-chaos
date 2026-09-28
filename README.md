@@ -8,12 +8,12 @@
 
 ## 👥 Team
 
-| Field | Value |
-|---|---|
-| **Team Name** | Code & Chaos |
-| **Track** | AI (IBM × NFSU Hackathon, Track 4 "AI & Predictive", Problem Statement 10) |
-| **Team Lead** | TODO: name, email |
-| **Members** | TODO: names |
+| Field         | Value                                                                      |
+| ------------- | -------------------------------------------------------------------------- |
+| **Team Name** | Code & Chaos                                                               |
+| **Track**     | AI (IBM × NFSU Hackathon, Track 4 "AI & Predictive", Problem Statement 10) |
+| **Team Lead** | Patel Raj Nileshbhai, rajpatel@cyberraj.in                                 |
+| **Members**   | (1) Karan Yadav (2) Dhaval Patil (3) Parth Shete                           |
 
 ---
 
@@ -30,6 +30,7 @@ repeat offenders. [More in docs/problem-statement.md](docs/problem-statement.md)
 ## 💡 Solution
 
 A three-tier pipeline:
+
 - **Rules** extract hard evidence (phones in every Indian format, accounts, UPI IDs, IMEIs, vehicles, handles).
 - **Laya**, an open-source decision model running locally, drafts the crime type and methods with a calibrated
   confidence.
@@ -61,13 +62,13 @@ MCP client; a live Bob session is still to be done). [More in docs/solution-over
 
 ## 🛠️ Tech Stack
 
-| Category | Technologies |
-|---|---|
-| **Languages** | Python 3.12, JavaScript (React) |
-| **Frameworks** | FastAPI, SQLAlchemy 2, Next.js 16 / React 19, Tailwind, react-force-graph (canvas graph), NetworkX, PyTorch, sentence-transformers, MCP Python SDK |
+| Category             | Technologies                                                                                                                                                         |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Languages**        | Python 3.12, JavaScript (React)                                                                                                                                      |
+| **Frameworks**       | FastAPI, SQLAlchemy 2, Next.js 16 / React 19, Tailwind, react-force-graph (canvas graph), NetworkX, PyTorch, sentence-transformers, MCP Python SDK                   |
 | **IBM Technologies** | IBM watsonx.ai + IBM Granite 4 (`granite-4-h-small`), IBM Granite Embedding (`granite-embedding-30m-english`), IBM Bob connection (MCP server + `.bob/` custom mode) |
-| **Databases** | SQLite (WAL; PostgreSQL-ready through SQLAlchemy) |
-| **Other** | Laya decision model (Convai Innovations, Apache 2.0), numpy, pytest |
+| **Databases**        | SQLite (WAL; PostgreSQL-ready through SQLAlchemy)                                                                                                                    |
+| **Other**            | Laya decision model (Convai Innovations, Apache 2.0), numpy, pytest                                                                                                  |
 
 ---
 
@@ -109,6 +110,7 @@ powershell -ExecutionPolicy Bypass -File scripts\setup.ps1          # Linux/macO
 powershell -ExecutionPolicy Bypass -File scripts\start_all.ps1      # Linux/macOS: bash scripts/start_all.sh
 # open http://localhost:3000   ·   stop: scripts\stop_all.ps1 (Linux/macOS: bash scripts/stop_all.sh)
 ```
+
 Unattended install: add `-Yes` (PowerShell) or `--yes` (bash). Setup can be re-run at any time; it only fixes what is
 missing.
 
@@ -116,22 +118,22 @@ missing.
 
 ## 🖥️ Demo
 
-| Artifact | Link |
-|---|---|
-| 📹 Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
-| 🌐 Live Demo | [See demo/live-demo-url.txt](demo/live-demo-url.txt) (runs locally) |
-| 🖼️ Screenshots | [See demo/screenshots/](demo/screenshots/) |
-| 📊 Presentation | [See presentation/](presentation/) |
+| Artifact        | Link                                                                |
+| --------------- | ------------------------------------------------------------------- |
+| 📹 Demo Video   | [See demo/demo-video-link.txt](demo/demo-video-link.txt)            |
+| 🌐 Live Demo    | [See demo/live-demo-url.txt](demo/live-demo-url.txt) (runs locally) |
+| 🖼️ Screenshots  | [See demo/screenshots/](demo/screenshots/)                          |
+| 📊 Presentation | [See presentation/](presentation/)                                  |
 
 **Measured on the held-out test split (305 FIRs never used for tuning):**
 
-| Output | Result |
-|---|---|
-| Crime major / minor head | 93.4% / 83.0% (Granite 40/40 on escalated FIRs) |
-| Hard evidence extraction | 100% precision, 100% recall, 100% correct roles |
+| Output                   | Result                                                      |
+| ------------------------ | ----------------------------------------------------------- |
+| Crime major / minor head | 93.4% / 83.0% (Granite 40/40 on escalated FIRs)             |
+| Hard evidence extraction | 100% precision, 100% recall, 100% correct roles             |
 | Repeat-offender clusters | 100% precision, 93.7% recall, 11/12 planted gangs, 0 decoys |
-| Accused names | 88% found |
-| MO flags | F1 0.64 |
+| Accused names            | 88% found                                                   |
+| MO flags                 | F1 0.64                                                     |
 
 ---
 

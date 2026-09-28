@@ -12,15 +12,15 @@ team:
   name: "Code & Chaos"                 # REQUIRED
   track: "AI"                          # REQUIRED — one of: AI | DevOps | Sustainability | Open
   lead:
-    name: ""                           # REQUIRED — TODO: team lead name
-    email: ""                          # REQUIRED — TODO: team lead email
+    name: "Patel Raj Nileshbhai"                           # REQUIRED — TODO: team lead name
+    email: "rajpatel@cyberraj.in"                          # REQUIRED — TODO: team lead email
   members:
-    - name: ""                         # REQUIRED — TODO: team member 1
-      email: ""
-    - name: ""
-      email: ""
-    - name: ""
-      email: ""
+    - name: "Karan Yadav"                         # REQUIRED — TODO: team member 1
+      email: "yadavkaranvedkumar@gmail.com"
+    - name: "Dhaval Patil"
+      email: "dhavalpatil2003@gmail.com"
+    - name: "Parth Shete"
+      email: "sheteparth579@gmail.com"
 
 submission:
   title: "CrimeFIR: FIR Intelligence & Crime Pattern Detector"   # REQUIRED

@@ -1,4 +1,0 @@
-NOT DEPLOYED - run locally using docs/setup-guide.md
-
-The system runs locally: a GPU model service (Laya + IBM Granite Embedding), IBM Granite on watsonx.ai,
-a FastAPI core API and a Next.js web app (http://localhost:3000); an MCP server exposes the API to IBM Bob.
