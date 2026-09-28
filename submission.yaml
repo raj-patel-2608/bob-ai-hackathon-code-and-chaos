@@ -9,13 +9,13 @@
 # =============================================================================
 
 team:
-  name: "Code & Chaos"                 # REQUIRED
-  track: "AI"                          # REQUIRED — one of: AI | DevOps | Sustainability | Open
+  name: "Code & Chaos" # REQUIRED
+  track: "AI" # REQUIRED — one of: AI | DevOps | Sustainability | Open
   lead:
-    name: "Patel Raj Nileshbhai"                           # REQUIRED — TODO: team lead name
-    email: "rajpatel@cyberraj.in"                          # REQUIRED — TODO: team lead email
+    name: "Patel Raj Nileshbhai" # REQUIRED — TODO: team lead name
+    email: "rajpatel@cyberraj.in" # REQUIRED — TODO: team lead email
   members:
-    - name: "Karan Yadav"                         # REQUIRED — TODO: team member 1
+    - name: "Karan Yadav" # REQUIRED — TODO: team member 1
       email: "yadavkaranvedkumar@gmail.com"
     - name: "Dhaval Patil"
       email: "dhavalpatil2003@gmail.com"
@@ -23,22 +23,22 @@ team:
       email: "sheteparth579@gmail.com"
 
 submission:
-  title: "CrimeFIR: FIR Intelligence & Crime Pattern Detector"   # REQUIRED
+  title: "CrimeFIR: FIR Intelligence & Crime Pattern Detector" # REQUIRED
 
-  problem_statement: >                 # REQUIRED
+  problem_statement: > # REQUIRED
     Police FIRs are free text (UP's CCTNS alone holds 3+ crore with no NLP layer), and serial offenders such as
     Jamtara-style call centres reuse the same phones and mule accounts across districts. Each victim files at a
     different station and each FIR is written differently, so investigators and Station House Officers never see
     the inter-district links, the crime mix or the repeat offenders (IBM x NFSU PS10).
 
-  solution_summary: >                  # REQUIRED
+  solution_summary: > # REQUIRED
     CrimeFIR auto-drafts the NCRB crime classification (Major/Minor Head, method, victim, accused) from raw FIR text
     using rules for hard evidence, the local Laya decision model, and IBM Granite on watsonx.ai as a grounded second
     opinion when Laya is under 40% confident. It links FIRs through shared evidence, flags repeat-offender clusters
     with NetworkX and a transparent risk score, and writes number-verified station crime briefs. Investigators use the
     web app; an MCP server (verified with an MCP client) exposes the same intelligence as 12 tools for IBM Bob.
 
-  key_features:                        # REQUIRED — List 3 to 5 specific features you implemented
+  key_features: # REQUIRED — List 3 to 5 specific features you implemented
     - "Auto-drafted NCRB I.I.F.-II per FIR: crime major/minor head (93% / 83% on unseen FIRs), 24 MO flags, victim, accused"
     - "Evidence-based repeat-offender clusters across stations and districts (NetworkX): 100% precision, 0 decoys"
     - "System-1/System-2 decisions: Laya locally on GPU/CPU + IBM Granite (watsonx.ai) for low-confidence FIRs, grounded JSON"
@@ -46,11 +46,33 @@ submission:
     - "MCP server with 12 CrimeFIR tools + .bob 'FIR Analyst' mode so IBM Bob can query FIRs, groups and station trends"
 
   tech_stack:
-    languages: ["Python", "JavaScript"]                  # REQUIRED
-    frameworks: ["FastAPI", "SQLAlchemy", "Next.js", "React", "NetworkX", "PyTorch", "sentence-transformers", "MCP Python SDK"]
-    ibm_technologies: ["watsonx.ai", "IBM Granite 4 (granite-4-h-small)", "IBM Granite Embedding", "IBM Bob (via MCP server + .bob custom mode)"]
+    languages: ["Python", "JavaScript"] # REQUIRED
+    frameworks:
+      [
+        "FastAPI",
+        "SQLAlchemy",
+        "Next.js",
+        "React",
+        "NetworkX",
+        "PyTorch",
+        "sentence-transformers",
+        "MCP Python SDK",
+      ]
+    ibm_technologies:
+      [
+        "watsonx.ai",
+        "IBM Granite 4 (granite-4-h-small)",
+        "IBM Granite Embedding",
+        "IBM Bob (via MCP server + .bob custom mode)",
+      ]
     databases: ["SQLite"]
-    other: ["Laya decision model (Convai Innovations, Apache 2.0)", "Tailwind CSS", "react-force-graph", "pytest"]
+    other:
+      [
+        "Laya decision model (Convai Innovations, Apache 2.0)",
+        "Tailwind CSS",
+        "react-force-graph",
+        "pytest",
+      ]
 
   what_we_are_most_proud_of: >
     Evidence first and honestly measured: 100% cluster precision with zero decoys and 100% evidence extraction
@@ -74,7 +96,7 @@ artifacts:
   source_code: "src/"
   setup_guide: "docs/setup-guide.md"
   architecture_doc: "docs/architecture.md"
-  demo_video: "demo/demo-video-link.txt"   # URL to hosted video (YouTube, Loom, Box)
-  live_demo: "demo/live-demo-url.txt"      # URL to deployed demo (optional)
+  demo_video: "demo/demo-video-link.txt" # URL to hosted video (YouTube, Loom, Box)
+  live_demo: "demo/live-demo-url.txt" # URL to deployed demo (optional)
   screenshots: "demo/screenshots/"
   presentation: "presentation/"
